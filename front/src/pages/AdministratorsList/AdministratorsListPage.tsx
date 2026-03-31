@@ -73,7 +73,9 @@ export default function AdministratorsListPage() {
                     parentIsDialogOpen={isAnnualResetDialogOpen}
                     parentSetIsDialogOpen={setIsAnnualResetDialogOpen}
                     title="Confirmer la réinitialisation annuelle"
-                    content="Cette action va réinitialiser les équipes, les horaires de passage des évaluations et les résultats. Les administrateurs et les juges seront conservés. Voulez-vous continuer ?"
+                    {/* Message aligné avec les données réellement conservées lors du reset. */}
+                    {/* @author Nathan Reyes */}
+                    content="Cette action va réinitialiser les équipes, les horaires de passage des évaluations et les résultats. Les personnes ressources, les juges et les administrateurs seront conservés. Voulez-vous continuer ?"
                     confirmationButtonText="Confirmer la réinitialisation"
                     confirmationButtonOnClick={handleAnnualReset}
                 />
