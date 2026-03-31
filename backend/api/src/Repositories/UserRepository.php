@@ -289,11 +289,15 @@ class UserRepository extends Repository
             // @author Nathan Reyes
             $this->db->beginTransaction();
 
-            // Supprime les liens et données opérationnelles de l'évènement.
-            // NOTE: on conserve la table de référence time_slots pour éviter
-            // de briser les pages qui dépendent des plages horaires de base.
-            // Les horaires de passage sont bien réinitialisés via la suppression
-            // des évaluations (liens juge/équipe/heure).
+            // Supprime UNIQUEMENT les données demandées pour la réinitialisation annuelle:
+            // - équipes (et leurs liens),
+            // - horaires de passage (via les évaluations),
+            // - résultats.
+            // IMPORTANT: on ne supprime PAS les administrateurs, ni les juges.
+            // @author Nathan Reyes
+            //
+            // NOTE: la table de référence time_slots est conservée; ce sont les
+            // assignations de passage qui sont réinitialisées en supprimant evaluation.
             // @author Nathan Reyes
             $queries = [
                 "DELETE FROM criteria_evaluation",
@@ -303,9 +307,6 @@ class UserRepository extends Repository
                 "DELETE FROM teams_contact_person",
                 "DELETE FROM contact_person",
                 "DELETE FROM teams",
-                // On conserve les juges d'une année à l'autre et on retire seulement les participants.
-                // @author Nathan Reyes
-                "DELETE FROM users WHERE role_id = 3",
                 "UPDATE info_events SET event_processed = 0"
             ];
 

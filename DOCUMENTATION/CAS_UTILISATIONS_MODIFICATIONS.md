@@ -99,3 +99,18 @@
   - les liaisons d'équipes et les contacts associés,
   - les équipes et les participants.
 - Les changements de ce cas ont été réalisés et commentés par `@author Nathan Reyes`.
+
+## Cas 5 — Ajustement ciblé de la réinitialisation annuelle + confirmation utilisateur
+
+### Fichiers modifiés
+
+- `backend/api/src/Repositories/UserRepository.php`
+- `front/src/pages/AdministratorsList/AdministratorsListPage.tsx`
+- `DOCUMENTATION/CAS_UTILISATIONS_MODIFICATIONS.md`
+
+### Résumé
+
+- Réduction du périmètre de la réinitialisation annuelle pour respecter le besoin métier: suppression uniquement des données d'équipes (et liaisons), des horaires de passage (via `evaluation` + `criteria_evaluation`) et des résultats (`results`).
+- Conservation explicite des administrateurs et des juges lors de la réinitialisation annuelle (plus aucune suppression de comptes utilisateurs dans ce flux).
+- Ajout d'un message de confirmation obligatoire côté interface d'administration avant de lancer la réinitialisation annuelle.
+- Les changements de ce cas ont été réalisés et commentés en français par `@author Nathan Reyes`.
