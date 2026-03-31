@@ -305,6 +305,7 @@ class UserRepository extends Repository
                 "DELETE FROM results",
                 "DELETE FROM users_teams",
                 "DELETE FROM teams_contact_person",
+                "DELETE FROM contact_person",
                 "DELETE FROM teams",
                 "UPDATE info_events SET event_processed = 0"
             ];
