@@ -293,7 +293,9 @@ class UserRepository extends Repository
             // - équipes (et leurs liens),
             // - horaires de passage (via les évaluations),
             // - résultats.
-            // IMPORTANT: on ne supprime PAS les administrateurs, ni les juges.
+            // Aucun autre bloc de données n'est modifié.
+            // IMPORTANT: on ne supprime PAS les personnes ressources,
+            // ni les juges, ni les administrateurs.
             // @author Nathan Reyes
             //
             // NOTE: la table de référence time_slots est conservée; ce sont les
@@ -305,9 +307,7 @@ class UserRepository extends Repository
                 "DELETE FROM results",
                 "DELETE FROM users_teams",
                 "DELETE FROM teams_contact_person",
-                "DELETE FROM contact_person",
-                "DELETE FROM teams",
-                "UPDATE info_events SET event_processed = 0"
+                "DELETE FROM teams"
             ];
 
             foreach ($queries as $query) {
