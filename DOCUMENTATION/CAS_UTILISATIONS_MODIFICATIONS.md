@@ -90,9 +90,10 @@
 
 - Ajout d'un conteneur horizontal scrollable et de `autoHeight` sur les tableaux « Vue des équipes » et « Vue des membres » afin d'éviter la coupure visuelle et d'afficher le tableau au complet selon l'espace disponible.
 - Ajustement responsive des colonnes du tableau des équipes (`flex` + `minWidth`) et masquage par défaut de colonnes secondaires afin d'améliorer l'affichage complet à zoom normal (100%) sans dézoomer la page.
+- Remplacement du `Container` MUI par une zone de contenu fluide (`Box`) dans la page d'administration, car la `max-width` du `Container` comprimait les tableaux et causait l'affichage tronqué.
 - Renforcement de la réinitialisation annuelle côté backend avec transaction SQL (`beginTransaction` / `commit` / `rollBack`) pour éviter les états partiels qui pouvaient provoquer des bogues d'affichage.
 - Extension de la réinitialisation annuelle pour inclure explicitement :
-  - les horaires de passage (`time_slots`),
+  - la réinitialisation des horaires de passage via la suppression des évaluations (tout en conservant la table de référence `time_slots`),
   - les résultats (`results`),
   - les évaluations et critères d'évaluation,
   - les liaisons d'équipes et les contacts associés,

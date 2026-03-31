@@ -36,6 +36,16 @@ export default function TeamsTable() {
   // @author Nathan Reyes
   const [teamDetail, setTeamDetail] = useState<ITeam | null>(null);
 
+  // Normalise les erreurs API pour éviter une page blanche si le message
+  // reçu n'est pas une chaîne simple (ex.: tableau/objet).
+  // @author Nathan Reyes
+  const normalizeErrorMessage = (error: unknown): string => {
+    if (typeof error === 'string') return error;
+    if (Array.isArray(error)) return error.join(', ');
+    if (error && typeof error === 'object') return JSON.stringify(error);
+    return 'Une erreur est survenue.';
+  };
+
   // Formate les membres peu importe le format reçu (concaténé ou tableau détaillé).
   // @author Nathan Reyes
   const formatMembersForDisplay = (members: ITeam['members']) => {
@@ -282,7 +292,7 @@ export default function TeamsTable() {
         const teamsResponse = await TeamsListService.tryGetTeamsMembersConcats();
         if (teamsResponse.error) {
           // Afficher un message d'erreur.
-          setSnackbarMessage(teamsResponse.error);
+          setSnackbarMessage(normalizeErrorMessage(teamsResponse.error));
           setSnackbarMessageType('error');
           setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
         } else {
@@ -292,7 +302,7 @@ export default function TeamsTable() {
         const categoriesResponse = await TeamsListService.tryGetCategories();
         if (categoriesResponse.error) {
           // Afficher un message d'erreur.
-          setSnackbarMessage(categoriesResponse.error);
+          setSnackbarMessage(normalizeErrorMessage(categoriesResponse.error));
           setSnackbarMessageType('error');
           setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
         } else {

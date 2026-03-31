@@ -290,13 +290,15 @@ class UserRepository extends Repository
             $this->db->beginTransaction();
 
             // Supprime les liens et données opérationnelles de l'évènement.
-            // Inclut les horaires d'évaluation (time_slots) et les résultats.
+            // NOTE: on conserve la table de référence time_slots pour éviter
+            // de briser les pages qui dépendent des plages horaires de base.
+            // Les horaires de passage sont bien réinitialisés via la suppression
+            // des évaluations (liens juge/équipe/heure).
             // @author Nathan Reyes
             $queries = [
                 "DELETE FROM criteria_evaluation",
                 "DELETE FROM evaluation",
                 "DELETE FROM results",
-                "DELETE FROM time_slots",
                 "DELETE FROM users_teams",
                 "DELETE FROM teams_contact_person",
                 "DELETE FROM contact_person",
