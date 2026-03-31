@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Stack } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Stack, Box } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import TeamsTableToolbar from './TeamsTableToolbar';
 import TemporarySnackbar, { SnackbarMessageType } from '../../TemporarySnackbar/TemporarySnackbar';
@@ -379,7 +379,9 @@ export default function TeamsTable() {
       </Dialog>
 
       {/* Le tableau */}
-      <div className="table_equipes_concatenes">
+      {/* Conteneur scrollable pour afficher le tableau au complet même sur petits écrans. */}
+      {/* @author Nathan Reyes */}
+      <Box sx={{ width: '100%', overflowX: 'auto' }}>
         <DataGrid<ITeam>
           pageSizeOptions={[25, 50, 100]}
           initialState={{
@@ -401,6 +403,7 @@ export default function TeamsTable() {
               setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
             }
           }}
+          autoHeight
           sx={{ width: '100%', minHeight: 400 }} // Le tableau prend 100% de la largeur et une hauteur minimale de 400px.
           slots={{
             // Passer <TeamsTableToolbar /> comme barre d'outils pour ce tableau.
@@ -419,7 +422,7 @@ export default function TeamsTable() {
           // @author Nathan Reyes
           onRowDoubleClick={(params) => setTeamDetail(params.row)}
         />
-      </div>
+      </Box>
     </>
   );
 }

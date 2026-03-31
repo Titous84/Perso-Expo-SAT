@@ -285,13 +285,21 @@ class UserRepository extends Repository
     public function reset_event_data(): bool
     {
         try {
-            // Supprimer les liens et données opérationnelles de l'évènement.
+            // Démarre une transaction pour garantir une réinitialisation cohérente.
+            // @author Nathan Reyes
+            $this->db->beginTransaction();
+
+            // Supprime les liens et données opérationnelles de l'évènement.
+            // Inclut les horaires d'évaluation (time_slots) et les résultats.
             // @author Nathan Reyes
             $queries = [
                 "DELETE FROM criteria_evaluation",
                 "DELETE FROM evaluation",
+                "DELETE FROM results",
+                "DELETE FROM time_slots",
                 "DELETE FROM users_teams",
                 "DELETE FROM teams_contact_person",
+                "DELETE FROM contact_person",
                 "DELETE FROM teams",
                 // On conserve les juges d'une année à l'autre et on retire seulement les participants.
                 // @author Nathan Reyes
@@ -304,8 +312,16 @@ class UserRepository extends Repository
                 $stmt->execute();
             }
 
+            // Confirme toutes les suppressions si aucune erreur n'est survenue.
+            // @author Nathan Reyes
+            $this->db->commit();
             return true;
         } catch (PDOException $exception) {
+            // Annule les changements en cas d'échec pour éviter un état partiellement réinitialisé.
+            // @author Nathan Reyes
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
             $context["http_error_code"] = $exception->getCode();
             $this->logHandler->critical($exception->getMessage(), $context);
             return false;
