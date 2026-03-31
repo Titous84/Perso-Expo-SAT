@@ -76,3 +76,25 @@
 - Ajustement CSS des barres de navigation (haut/bas) pour occuper toute la largeur visible.
 - Refonte de la page « Gestion des grilles d'évaluation » avec une interface plus claire (entête, recherche, état vide, cartes d'actions).
 - Amélioration de l'affichage du tableau admin des équipes avec un mode de consultation détaillé (double-clic sur une ligne) pour voir toutes les informations sans troncature.
+
+## Cas 4 — Correctifs affichage complet des tableaux équipes + réinitialisation annuelle robuste
+
+### Fichiers modifiés
+
+- `front/src/components/TeamsListPage/TeamsTables/TeamsTable.tsx`
+- `front/src/components/TeamsListPage/AllTeamsMembersTable/AllTeamsMembersTable.tsx`
+- `backend/api/src/Repositories/UserRepository.php`
+- `DOCUMENTATION/CAS_UTILISATIONS_MODIFICATIONS.md`
+
+### Résumé
+
+- Ajout d'un conteneur horizontal scrollable et de `autoHeight` sur les tableaux « Vue des équipes » et « Vue des membres » afin d'éviter la coupure visuelle et d'afficher le tableau au complet selon l'espace disponible.
+- Ajustement responsive des colonnes du tableau des équipes (`flex` + `minWidth`) et masquage par défaut de colonnes secondaires afin d'améliorer l'affichage complet à zoom normal (100%) sans dézoomer la page.
+- Renforcement de la réinitialisation annuelle côté backend avec transaction SQL (`beginTransaction` / `commit` / `rollBack`) pour éviter les états partiels qui pouvaient provoquer des bogues d'affichage.
+- Extension de la réinitialisation annuelle pour inclure explicitement :
+  - les horaires de passage (`time_slots`),
+  - les résultats (`results`),
+  - les évaluations et critères d'évaluation,
+  - les liaisons d'équipes et les contacts associés,
+  - les équipes et les participants.
+- Les changements de ce cas ont été réalisés et commentés par `@author Nathan Reyes`.
