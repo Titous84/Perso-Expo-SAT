@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Stack } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Stack, Box } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import TeamsTableToolbar from './TeamsTableToolbar';
 import TemporarySnackbar, { SnackbarMessageType } from '../../TemporarySnackbar/TemporarySnackbar';
@@ -36,6 +36,16 @@ export default function TeamsTable() {
   // @author Nathan Reyes
   const [teamDetail, setTeamDetail] = useState<ITeam | null>(null);
 
+  // Normalise les erreurs API pour éviter une page blanche si le message
+  // reçu n'est pas une chaîne simple (ex.: tableau/objet).
+  // @author Nathan Reyes
+  const normalizeErrorMessage = (error: unknown): string => {
+    if (typeof error === 'string') return error;
+    if (Array.isArray(error)) return error.join(', ');
+    if (error && typeof error === 'object') return JSON.stringify(error);
+    return 'Une erreur est survenue.';
+  };
+
   // Formate les membres peu importe le format reçu (concaténé ou tableau détaillé).
   // @author Nathan Reyes
   const formatMembersForDisplay = (members: ITeam['members']) => {
@@ -56,30 +66,37 @@ export default function TeamsTable() {
   };
 
   // Quelles colonnes on veut afficher et sous quel nom.
+  // Configuration responsive: flex + minWidth pour éviter la troncature visuelle
+  // du tableau à 100% de zoom sur les écrans plus étroits.
+  // @author Nathan Reyes
   const columns: GridColDef<ITeam>[] = [
     {
       field: 'team_number',
       headerName: "Numéro d'équipe",
-      width: 150,
+      minWidth: 130,
+      flex: 0.8,
       editable: false,
     },
     {
       field: 'title',
       headerName: 'Titre',
-      width: 200,
+      minWidth: 170,
+      flex: 1,
       editable: true,
     },
     {
       field: 'description',
       headerName: 'Description',
-      width: 250,
+      minWidth: 220,
+      flex: 1.2,
       hideable: true,
       editable: true,
     },
     {
       field: 'year',
       headerName: 'Année',
-      width: 200,
+      minWidth: 150,
+      flex: 0.9,
       editable: true,
       type: 'singleSelect',
       valueOptions: [
@@ -90,7 +107,8 @@ export default function TeamsTable() {
     {
       field: 'category',
       headerName: 'Catégorie',
-      width: 200,
+      minWidth: 170,
+      flex: 1,
       editable: true,
       type: 'singleSelect',
       valueOptions: categories.map((category) => ({
@@ -101,13 +119,15 @@ export default function TeamsTable() {
     {
       field: 'survey',
       headerName: "Type d'évaluation",
-      width: 200,
+      minWidth: 180,
+      flex: 1,
       hideable: true,
     },
     {
       field: 'teams_activated',
       headerName: 'Équipe activée',
-      width: 150,
+      minWidth: 150,
+      flex: 0.9,
       hideable: true,
       editable: true,
       type: 'singleSelect',
@@ -128,16 +148,18 @@ export default function TeamsTable() {
       },
     },
 
-    { field: 'members', headerName: 'Membres', width: 260 },
+    { field: 'members', headerName: 'Membres', minWidth: 220, flex: 1.4 },
     {
       field: 'contact_person_name',
       headerName: "Nom de l'enseignant(e)",
-      width: 260,
+      minWidth: 220,
+      flex: 1.2,
     },
     {
       field: 'contact_person_email',
       headerName: "Adresse courriel de l'enseignant(e)",
-      width: 300,
+      minWidth: 240,
+      flex: 1.4,
       hideable: true,
     },
   ];
@@ -270,7 +292,7 @@ export default function TeamsTable() {
         const teamsResponse = await TeamsListService.tryGetTeamsMembersConcats();
         if (teamsResponse.error) {
           // Afficher un message d'erreur.
-          setSnackbarMessage(teamsResponse.error);
+          setSnackbarMessage(normalizeErrorMessage(teamsResponse.error));
           setSnackbarMessageType('error');
           setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
         } else {
@@ -280,7 +302,7 @@ export default function TeamsTable() {
         const categoriesResponse = await TeamsListService.tryGetCategories();
         if (categoriesResponse.error) {
           // Afficher un message d'erreur.
-          setSnackbarMessage(categoriesResponse.error);
+          setSnackbarMessage(normalizeErrorMessage(categoriesResponse.error));
           setSnackbarMessageType('error');
           setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
         } else {
@@ -379,12 +401,23 @@ export default function TeamsTable() {
       </Dialog>
 
       {/* Le tableau */}
-      <div className="table_equipes_concatenes">
+      {/* Conteneur scrollable pour afficher le tableau au complet même sur petits écrans. */}
+      {/* @author Nathan Reyes */}
+      <Box sx={{ width: '100%', overflowX: 'auto' }}>
         <DataGrid<ITeam>
           pageSizeOptions={[25, 50, 100]}
           initialState={{
             pagination: {
               paginationModel: { pageSize: 100 },
+            },
+            // Masque par défaut des colonnes secondaires pour améliorer la lisibilité
+            // sans empêcher l'utilisateur de les réactiver via le menu "Colonnes".
+            // @author Nathan Reyes
+            columns: {
+              columnVisibilityModel: {
+                description: false,
+                contact_person_email: false,
+              },
             },
           }}
           rows={teamsArray}
@@ -401,6 +434,7 @@ export default function TeamsTable() {
               setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
             }
           }}
+          autoHeight
           sx={{ width: '100%', minHeight: 400 }} // Le tableau prend 100% de la largeur et une hauteur minimale de 400px.
           slots={{
             // Passer <TeamsTableToolbar /> comme barre d'outils pour ce tableau.
@@ -419,7 +453,7 @@ export default function TeamsTable() {
           // @author Nathan Reyes
           onRowDoubleClick={(params) => setTeamDetail(params.row)}
         />
-      </div>
+      </Box>
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Box } from '@mui/material';
 import AllTeamsMembersTableToolbar from './AllTeamsMembersTableToolbar';
 import TemporarySnackbar, { SnackbarMessageType } from '../../TemporarySnackbar/TemporarySnackbar';
 import { validateMemberInfos } from '../Validations/ValidationMembers';
@@ -274,6 +275,9 @@ export default function AllTeamsMembersTable() {
           confirmationButtonOnClick={deleteSelectedMembers} // Passer une référence de la méthode de suppression pour que l'enfant puisse la déclencher.
         />
 
+        {/* Conteneur scrollable pour éviter la coupure visuelle du tableau. */}
+        {/* @author Nathan Reyes */}
+        <Box sx={{ width: '100%', overflowX: 'auto' }}>
         <DataGrid<ITeamsMember>
           pageSizeOptions={[25, 50, 100]}
           initialState={{
@@ -294,6 +298,7 @@ export default function AllTeamsMembersTable() {
               setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
             }
           }}
+          autoHeight
           sx={{ width: '100%', minHeight: 400 }} // Le tableau prend 100% de la largeur et une hauteur minimale de 400px.
           slots={{
             // Passer <AllTeamsMembersToolbar /> comme barre d'outils pour ce tableau.
@@ -310,6 +315,7 @@ export default function AllTeamsMembersTable() {
             setSelectedMembersIds(newSelection.map((id) => Number(id)));
           }}
         />
+        </Box>
       </>
     );
 }
