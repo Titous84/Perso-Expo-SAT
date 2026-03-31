@@ -1,0 +1,86 @@
+.buttonCreate {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.buttonEdit {
+    margin-right: 12px !important;
+}
+
+.buttonDelete {
+    margin-right: 0 !important;
+}
+
+.headerCard {
+    /* Nouvelle entête visuelle pour rendre la page plus conviviale. */
+    /* @author Nathan Reyes */
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #ffffff 0%, #f6f9ff 100%);
+}
+
+.sectionTitle {
+    font-weight: 700 !important;
+}
+
+.sectionSubtitle {
+    margin-top: 6px !important;
+}
+
+.actionsRow {
+    margin: 16px 0;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.gridList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.gridCard {
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gridCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08) !important;
+}
+
+.gridName {
+    font-weight: 600 !important;
+}
+
+.buttonGroup {
+    display: flex;
+    align-items: center;
+}
+
+.cardDivider {
+    margin-top: 12px !important;
+}
+
+.emptyState {
+    padding: 32px;
+    text-align: center;
+    border: 1px dashed #d0d0d0;
+    background-color: #fafafa !important;
+}
+
+.searchContainer {
+    margin-top: 14px;
+}
+
+@media only screen and (max-width: 750px) {
+    .buttonGroup {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}

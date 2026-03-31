@@ -1,0 +1,141 @@
+.backgroundElements {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: rgb(28,36,60);
+    /* Forcer la barre à occuper toute la largeur visible de l'écran. */
+    /* @author Nathan Reyes */
+    width: 100%;
+}
+/*Positionnement des elements*/
+/*Elements sur un ecran d'ordinateur*/
+@media only screen and (max-width: 1920px) and (min-width: 1080px) {
+    .hamburger {
+        display: none;
+    }
+    .menuGlobal {
+        display: block;
+    }
+}
+/*Elements sur une tablette*/
+@media only screen and (max-width: 1080px) and (min-width: 750px) {
+    .hamburger {
+        display: block;
+        margin: 20px;
+    }
+    .menuGlobal {
+        display: none;
+    }
+    img.iconHamburger {
+        max-width: 50px;
+        max-height: 50px;
+        color: whitesmoke;
+    }
+    .lienHamburger {
+        display: block;
+        color: black;
+        text-align: center;
+        padding: 20px;
+        margin: 10px;
+        text-decoration: none;
+        font-size: large;
+    }
+}
+/*Elements sur un telephone*/
+@media only screen and (max-width: 750px) {
+    .hamburger {
+        display: block;
+        margin: 20px;
+    }
+    .menuGlobal {
+        display: none;
+    }
+    img.iconHamburger {
+        max-width: 50px;
+        max-height: 50px;
+        color: whitesmoke;
+    }
+    .lienHamburger {
+        display: block;
+        color: black;
+        text-align: center;
+        padding: 10px;
+        margin: 10px;
+        text-decoration: none;
+        font-size: large;
+    }
+}
+li.positionGauche {
+    float: left;
+}
+li.positionDroit {
+    float: right;
+}
+.lienMenu {
+    display: block;
+    color: whitesmoke;
+    text-align: center;
+    padding: 20px;
+    margin: 10px;
+    text-decoration: none;
+    font-size: large;
+}
+li .lienMenu:hover {
+    background-color: rgb(#134b5f);
+}
+img.logoCegep {
+    margin-top: 5px;
+    margin-left: 5px;
+    max-width: 100px;
+    max-height: 100px;
+}
+p.titreMenu {
+    color: black;
+    text-align: center;
+}
+div.block {
+    display: block;
+}
+
+/* Alignement vertical et positionnement du menu vers la droite. */
+/* @author Nathan Reyes */
+div.block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Évite un conteneur rétréci lorsque le contenu varie selon le rôle. */
+    /* @author Nathan Reyes */
+    width: 100%;
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+}
+
+.menuGlobal {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.menuList {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0 12px 0 0;
+}
+
+li.positionGauche,
+li.positionDroit {
+    float: none;
+}
+
+.lienMenu {
+    margin: 0;
+}
