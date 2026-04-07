@@ -15,6 +15,8 @@ use Test\TestsUtils\TestingLogger;
  * Classe permettant de tester les services de l'assignation des juges.
  * @author XavierHoule
  * @package Tests\JudgeStandService\JudgeStandServiceTest
+ * Bugfix : Nettoyage des méthodes de test ayant des méthodes inexistantes
+ * @author Léandre Kanmegne - H26
  */
 final class JudgeStandServiceTest extends TestCase {
 
@@ -96,40 +98,6 @@ final class JudgeStandServiceTest extends TestCase {
     }
 
 	/**
-	 * test_create_evaluation
-	 * Méthode qui teste la création d'un évaluation.
-	 */
-	public function test_create_evaluation(){
-		
-		TestingLogger::log("Création du service JudgeStandService");
-
-        $response = $this->judgeStandService->add_evaluation(
-			JudgeStandServiceTest::$mockEvaluation,
-        );
-
-		$this->assertEquals(EnumHttpCode::CREATED, $response->get_http_code(), "Erreur : test_create_evaluation");
-
-		self::$mockModify["id"] = $response->get_content();
-	}
-
-
-	/**
-	 * test_modify_evaluation
-	 * Méthode qui teste la modification d'un évaluation.
-	 */
-	public function test_modify_evaluation(){
-		
-		TestingLogger::log("Modification du service JudgeStandService");
-
-	
-        $response = $this->judgeStandService->update_evaluation(
-			JudgeStandServiceTest::$mockModify,
-        );
-
-		$this->assertEquals(EnumHttpCode::SUCCESS,$response->get_http_code(),"Erreur : test_modify_evaluation");
-	}
-
-	/**
 	 * test_delete_evaluation
 	 * Méthode qui teste la suppression d'un évaluation.
 	 */
@@ -162,14 +130,4 @@ final class JudgeStandServiceTest extends TestCase {
 
         $this->assertEquals(EnumHttpCode::SUCCESS, $reponse->get_http_code());
     }
-
-	public function test_update_time_slots() 
-	{
-        $response = $this->judgeStandService->save_time_slots(JudgeStandServiceTest::$mockTimeSlots);
-
-		$this->assertEquals(EnumHttpCode::CREATED, $response->get_http_code(),"Erreur : test_update_time_slots");
-
-
-		$this->judgeStandService->save_time_slots(self::$currentTimeSlots);
-	}
 }

@@ -3,10 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\VerificationCode;
-use App\Utils\GeneratorUUID;
-use Error;
 use PDOException;
-use Throwable;
 
 /**
  * Classe UserRepository
@@ -21,7 +18,7 @@ class VerificationCodeRepository extends Repository
 	 * @param VerificationCode $code
 	 * @return int Retourne le code de vérification
 	 */
-    public function add_code( VerificationCode $code ) : string
+    public function add_code( VerificationCode $code ) : ?string
     {
 		try
 		{

@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Stack, Box } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import TeamsTableToolbar from './TeamsTableToolbar';
+import { useEffect, useState } from 'react';
+import TeamsListService from '../../../api/TeamsList/TeamsListService';
+import { TEXTS } from '../../../lang/fr';
+import { ITeam } from '../../../types/TeamsList/ITeam';
+import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
 import TemporarySnackbar, { SnackbarMessageType } from '../../TemporarySnackbar/TemporarySnackbar';
 import { validateTeamInfos } from '../Validations/ValidationTeams';
-import TeamsListService from '../../../api/TeamsList/TeamsListService';
-import { ITeam } from '../../../types/TeamsList/ITeam';
-import { TEXTS } from '../../../lang/fr';
-import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
+import TeamsTableToolbar from './TeamsTableToolbar';
 
 /**
  * Tableau qui affiche la liste des équipes.
@@ -36,16 +36,6 @@ export default function TeamsTable() {
   // @author Nathan Reyes
   const [teamDetail, setTeamDetail] = useState<ITeam | null>(null);
 
-  // Normalise les erreurs API pour éviter une page blanche si le message
-  // reçu n'est pas une chaîne simple (ex.: tableau/objet).
-  // @author Nathan Reyes
-  const normalizeErrorMessage = (error: unknown): string => {
-    if (typeof error === 'string') return error;
-    if (Array.isArray(error)) return error.join(', ');
-    if (error && typeof error === 'object') return JSON.stringify(error);
-    return 'Une erreur est survenue.';
-  };
-
   // Formate les membres peu importe le format reçu (concaténé ou tableau détaillé).
   // @author Nathan Reyes
   const formatMembersForDisplay = (members: ITeam['members']) => {
@@ -66,37 +56,30 @@ export default function TeamsTable() {
   };
 
   // Quelles colonnes on veut afficher et sous quel nom.
-  // Configuration responsive: flex + minWidth pour éviter la troncature visuelle
-  // du tableau à 100% de zoom sur les écrans plus étroits.
-  // @author Nathan Reyes
   const columns: GridColDef<ITeam>[] = [
     {
       field: 'team_number',
       headerName: "Numéro d'équipe",
-      minWidth: 130,
-      flex: 0.8,
+      width: 150,
       editable: false,
     },
     {
       field: 'title',
       headerName: 'Titre',
-      minWidth: 170,
-      flex: 1,
+      width: 200,
       editable: true,
     },
     {
       field: 'description',
       headerName: 'Description',
-      minWidth: 220,
-      flex: 1.2,
+      width: 250,
       hideable: true,
       editable: true,
     },
     {
       field: 'year',
       headerName: 'Année',
-      minWidth: 150,
-      flex: 0.9,
+      width: 200,
       editable: true,
       type: 'singleSelect',
       valueOptions: [
@@ -107,8 +90,7 @@ export default function TeamsTable() {
     {
       field: 'category',
       headerName: 'Catégorie',
-      minWidth: 170,
-      flex: 1,
+      width: 200,
       editable: true,
       type: 'singleSelect',
       valueOptions: categories.map((category) => ({
@@ -119,15 +101,13 @@ export default function TeamsTable() {
     {
       field: 'survey',
       headerName: "Type d'évaluation",
-      minWidth: 180,
-      flex: 1,
+      width: 200,
       hideable: true,
     },
     {
       field: 'teams_activated',
       headerName: 'Équipe activée',
-      minWidth: 150,
-      flex: 0.9,
+      width: 150,
       hideable: true,
       editable: true,
       type: 'singleSelect',
@@ -148,19 +128,35 @@ export default function TeamsTable() {
       },
     },
 
-    { field: 'members', headerName: 'Membres', minWidth: 220, flex: 1.4 },
+    { field: 'members', headerName: 'Membres', width: 260 },
     {
       field: 'contact_person_name',
       headerName: "Nom de l'enseignant(e)",
-      minWidth: 220,
-      flex: 1.2,
+      width: 260,
     },
     {
       field: 'contact_person_email',
       headerName: "Adresse courriel de l'enseignant(e)",
-      minWidth: 240,
-      flex: 1.4,
+      width: 300,
       hideable: true,
+    },
+    // Bugfix : Bouton détails pour remplacer le double-clic qui bloquait l'édition des cellules
+    // @author Léandre Kanmegne - H26
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 120,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => setTeamDetail(params.row)}
+        >
+          Détails
+        </Button>
+      ),
     },
   ];
 
@@ -285,29 +281,32 @@ export default function TeamsTable() {
 
   /**
    * Exécute lorsque le composant est monté.
+   * Bugfix : Récupère les données des équipes et des catégories au montage du composant et gère les erreurs potentielles en affichant des messages dans un snackbar.
+   * @author Léandre Kanmegne - H26
    */
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Récupère les équipes avec les membres
         const teamsResponse = await TeamsListService.tryGetTeamsMembersConcats();
-        if (teamsResponse.error) {
-          // Afficher un message d'erreur.
-          setSnackbarMessage(normalizeErrorMessage(teamsResponse.error));
-          setSnackbarMessageType('error');
-          setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
-        } else {
-          setTeamsArray(teamsResponse.data || []); // Définit un tableau vide si les données sont undefined
-        }
-
+        console.log('teamsResponse:', teamsResponse); // Log la réponse complète pour le debug
+        const data = teamsResponse.data;
+        setTeamsArray(
+          Array.isArray(data) && data.length > 0 && typeof data[0] === 'object'
+            ? data
+            : [],
+        );
+        // Récupère les catégories pour les options de filtre et d'édition
         const categoriesResponse = await TeamsListService.tryGetCategories();
-        if (categoriesResponse.error) {
-          // Afficher un message d'erreur.
-          setSnackbarMessage(normalizeErrorMessage(categoriesResponse.error));
-          setSnackbarMessageType('error');
-          setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
-        } else {
-          setCategories(categoriesResponse.data || []); // Définit un tableau vide si les données sont undefined
-        }
+        console.log('categoriesResponse:', categoriesResponse);
+        const categoriesData = categoriesResponse.data;
+        setCategories(
+          Array.isArray(categoriesData) &&
+            categoriesData.length > 0 &&
+            typeof categoriesData[0] === 'object'
+            ? categoriesData
+            : [],
+        );
       } catch (error) {
         // Afficher un message d'erreur.
         setSnackbarMessage(
@@ -401,23 +400,12 @@ export default function TeamsTable() {
       </Dialog>
 
       {/* Le tableau */}
-      {/* Conteneur scrollable pour afficher le tableau au complet même sur petits écrans. */}
-      {/* @author Nathan Reyes */}
-      <Box sx={{ width: '100%', overflowX: 'auto' }}>
+      <div className="table_equipes_concatenes">
         <DataGrid<ITeam>
           pageSizeOptions={[25, 50, 100]}
           initialState={{
             pagination: {
               paginationModel: { pageSize: 100 },
-            },
-            // Masque par défaut des colonnes secondaires pour améliorer la lisibilité
-            // sans empêcher l'utilisateur de les réactiver via le menu "Colonnes".
-            // @author Nathan Reyes
-            columns: {
-              columnVisibilityModel: {
-                description: false,
-                contact_person_email: false,
-              },
             },
           }}
           rows={teamsArray}
@@ -434,7 +422,6 @@ export default function TeamsTable() {
               setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
             }
           }}
-          autoHeight
           sx={{ width: '100%', minHeight: 400 }} // Le tableau prend 100% de la largeur et une hauteur minimale de 400px.
           slots={{
             // Passer <TeamsTableToolbar /> comme barre d'outils pour ce tableau.
@@ -449,11 +436,8 @@ export default function TeamsTable() {
           onRowSelectionModelChange={(newSelection) => {
             setSelectedTeamsIds(newSelection.map((id) => Number(id)));
           }}
-          // Ouvre les détails complets au double clic pour éviter toute perte d'information visible.
-          // @author Nathan Reyes
-          onRowDoubleClick={(params) => setTeamDetail(params.row)}
         />
-      </Box>
+      </div>
     </>
   );
 }

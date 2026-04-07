@@ -12,3 +12,4 @@ front/dist/*
 /node_modules
 .history/
 .vite/
+log/

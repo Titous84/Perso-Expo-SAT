@@ -1,7 +1,6 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Footer from './footer';
 import { MemoryRouter } from 'react-router-dom';
+import Footer from './footer';
 /**
  * Charles Lavoie
  */

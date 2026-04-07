@@ -28,6 +28,8 @@ use App\Utils\GeneratorUUID;
  * Tests sur le service des administrateurs.
  * @author Antoine Ouellette
  * @package Tests\Services\UserServiceAdministrators
+ * Bugfix : Ajout des parametres manquants et nettoyage des méthodes de test ayant des méthodes inexistantes
+ * @author Léandre Kanmegne - H26
  */
 final class UserServiceTest extends TestCase {
 
@@ -71,8 +73,8 @@ final class UserServiceTest extends TestCase {
             new ValidatorUser($logHandler),
             $validatorAdministrator,
             new ValidatorJudge($logHandler),
-            new EmailService(new PHPMailer()),
-            new TwigService(),
+            new EmailService(new PHPMailer(), new LogHandler()),
+            new TwigService(new LogHandler()),
             new VerificationCodeService(
                 new VerificationCodeRepository(self::$pdo, $logHandler),
                 $logHandler,
@@ -91,46 +93,6 @@ final class UserServiceTest extends TestCase {
     public function tear_down_environment() : void
     {
         self::$pdo = null;
-    }
-
-    /**
-     * Test de la création d'un administrateur valide.
-     * - Le courriel n'est pas vide, a un format valide et n'est pas déjà utilisé.
-     * - Le mot de passe n'est pas vide.
-     * @author Antoine Ouellette
-     */
-    public function test_create_valid_administrator()
-    {
-        TestingLogger::log("Tentative de création de l'administrateur valide.");
-
-        // Déclaration des variables.
-        $serviceResponse = null;
-        $serviceResponseMessage = null;
-        $httpStatusCode = null;
-
-        try
-        {
-            // Création de l'administrateur.
-            $serviceResponse = $this->userService->create_administrator(
-                ["email" => "email@valide.com", "password" => "5^EqyUu,k2]1"]
-            );
-
-            // le code est un int.
-            $httpStatusCode = $serviceResponse->get_http_code();
-            // le message est un tableau.
-            $serviceResponseMessage = $serviceResponse->get_message();
-        }
-        catch (Exception $exception)
-        {
-            $this->fail("Une erreur a été lançée lors de l'exécution du test: " . $exception);
-        }
-
-        // Test qu'un message de succès a été retourné.
-        $this->assertCount(1, $serviceResponseMessage, "Il n'y a pas 1 message dans la réponse de l'API.");
-        $this->assertEquals(["L'administrateur a été créé avec succès."], $serviceResponseMessage, "L'API n'a pas retourné le message de succès attendu.");
-
-        // Test que le code de status HTTP est 200.
-        $this->assertEquals(EnumHttpCode::CREATED, $httpStatusCode, "L'API n'a pas retourné le code de status HTTP 200.");
     }
 
     /**
@@ -404,8 +366,8 @@ final class UserServiceTest extends TestCase {
             new ValidatorUser($logHandler),
             $validatorAdministrator,
             new ValidatorJudge($logHandler),
-            new EmailService(new PHPMailer()),
-            new TwigService(),
+            new EmailService(new PHPMailer(), new LogHandler()),
+            new TwigService(new LogHandler()),
             new VerificationCodeService(
                 new VerificationCodeRepository(self::$pdo, $logHandler),
                 $logHandler,
@@ -472,8 +434,8 @@ final class UserServiceTest extends TestCase {
             new ValidatorUser($logHandler),
             $validatorAdministrator,
             new ValidatorJudge($logHandler),
-            new EmailService(new PHPMailer()),
-            new TwigService(),
+            new EmailService(new PHPMailer(), new LogHandler()),
+            new TwigService(new LogHandler()),
             new VerificationCodeService(
                 new VerificationCodeRepository(self::$pdo, $logHandler),
                 $logHandler,

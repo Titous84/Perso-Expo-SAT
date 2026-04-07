@@ -2,7 +2,7 @@
 # Source / Inspiré de :
 # https://cours-alexandre-ouellet.github.io/projet-integrateur-1/
 
-function Build-ExpoSAT {
+function Invoke-ExpoSAT {
 
     Write-Host "[*] Verification des fichiers de configuration (.env)..."
 
@@ -20,7 +20,29 @@ function Build-ExpoSAT {
         return
     }
 
-    Write-Host "[OK] Fichiers .env valides."
+    # Vérification des variables d'environnement essentielles dans .env.prod
+    # Affichage de warnings si des variables manquent ou si base_url se termine par /
+    # @author Léandre Kanmegne - H26
+    # Code généré par ChatGPT - modele 5.4 mars 2026
+    $envContent = Get-Content ./backend/api/.env.prod -ErrorAction SilentlyContinue
+    $requiredVars = @("dbhost", "dbname", "dbusername", "dbpassword", "base_url")
+    foreach ($var in $requiredVars) {
+        $found = $envContent | Where-Object { $_ -match ('^\s*' + $var + '\s*=') }
+        if (!$found) {
+            Write-Warning "Variable '$var' manquante dans .env.prod - le site risque de ne pas fonctionner."
+        }
+    }
+    # Verifie si base_url se termine par /
+    foreach ($line in $envContent) {
+        if ($line -match '^base_url\s*=\s*(.+)$') {
+            $url = $matches[1].Trim()
+            if ($url.EndsWith('/')) {
+                Write-Warning "La variable base_url de .env.prod ne doit pas se terminer par '/' - cela peut causer des erreurs dans les requetes API."
+            }
+        }
+    }
+
+    # Fin du code généré
 
     # =========================
     # Gestion du dossier build
@@ -62,4 +84,4 @@ function Build-ExpoSAT {
     Write-Host "[+] Build complete avec succes !"
 }
 
-Build-ExpoSAT
+Invoke-ExpoSAT

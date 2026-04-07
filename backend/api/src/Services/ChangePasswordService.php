@@ -3,7 +3,6 @@ namespace App\Services;
 
 use App\Enums\EnumHttpCode;
 use App\Models\Result;
-use App\Models\User;
 use App\Repositories\ChangePasswordRepository;
 use Exception;
 
@@ -30,8 +29,8 @@ class ChangePasswordService
 
     /**
      * Fonction permettant de changer le mot de passe d'un usager.
-     * @param User L'usager
-     * @param string le nouveau mot de passe
+     * @param string $email L'email de l'usager
+     * @param string $pwd Le nouveau mot de passe
      * @return Result Retourne le résultat de l'opération.
      */
     public function update_pwd(string $email, string $pwd): Result

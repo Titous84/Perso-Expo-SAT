@@ -34,7 +34,7 @@ export default class ResultService{
       public static async deletesJudgeScore(teamName: string, judgeId: number): Promise<APIResult<string>> {
         try {
             const response: APIResult<string> = await APIRequest(
-              'supprimer-resultat?teamName=${encodeURIComponent(teamName)}&judgeId=${judgeId}',
+              `supprimer-resultat?teamName=${encodeURIComponent(teamName)}&judgeId=${judgeId}`,
               'DELETE',
               true,
             );

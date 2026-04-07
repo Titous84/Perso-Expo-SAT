@@ -1,11 +1,10 @@
 import APIResult from "../../types/apiResult";
+import IAssignation from '../../types/juge-stand/IAssignation';
 import JugeInfo from "../../types/juge-stand/jugeInfo";
 import StandInfo from "../../types/juge-stand/standInfo";
+import TimeSlots from "../../types/juge-stand/timeSlots";
 import { ShowToast } from "../../utils/utils";
 import { APIRequest } from "../apiUtils";
-import IAssignation from '../../types/juge-stand/IAssignation';
-import TimeSlots from "../../types/juge-stand/timeSlots";
-import { ICategories } from "../../types/TeamsList/ICategories";
 
 
 /**

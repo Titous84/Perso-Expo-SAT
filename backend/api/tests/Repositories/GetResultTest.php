@@ -4,6 +4,7 @@ namespace Repositories\ResultatRepository;
 
 use App\Repositories\ResultatRepository;
 use PHPUnit\Framework\TestCase;
+use App\Handlers\LogHandler;
 use Symfony\Component\Dotenv\Dotenv;
 use Test\TestsUtils\PDOInitialize;
 use Test\TestsUtils\TestingLogger;
@@ -15,6 +16,8 @@ use PDO;
  * 
  * @author de base inconnu, le fichier était déja commencé
  * @editor Francis PAYAN
+ * * Bugfix : Ajout de LogHandler en parametre
+ * @author Léandre Kanmegne - H26
  */
 final class ResultatRepositoryTest extends TestCase
 {
@@ -48,7 +51,7 @@ final class ResultatRepositoryTest extends TestCase
     {
         parent::setUp(); // Appel à la méthode parente setUp.
         $this->pdo = $this->createMock(PDO::class); // Initialisation de $pdo en tant que mock.
-        $this->resultatRepository = new ResultatRepository($this->pdo); // Utilisation de $pdo pour instancier ResultatRepository.
+        $this->resultatRepository = new ResultatRepository($this->pdo, new LogHandler()); // Utilisation de $pdo pour instancier ResultatRepository.
     }
 
     /**

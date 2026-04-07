@@ -2,41 +2,38 @@
  * @file Page d'inscription des participants.
  * @author Tristan Lafontaine
  */
-import { Navigate } from 'react-router';
-import { ValidatorForm } from 'react-material-ui-form-validator';
 import {
   Box,
   Button,
   CircularProgress,
-  TextField,
-  Divider,
-} from '@mui/material';
-import AlertComposant from '../../components/alert/alert';
-import TeamContactPerson from '../../components/signup/team-contact-person';
-import TeamInformation from '../../components/signup/team-info';
-import TeamMemberForm from '../../components/signup/team-member';
-import APIResult from '../../types/apiResult';
-import Category from '../../types/sign-up/category';
-import IPage from '../../types/IPage';
-import TeamInfo from '../../types/sign-up/team-info';
-import SignUpService from '../../api/signUp/signUpService';
-import { INPUT_VARIANT } from '../../utils/muiConstants';
-import {
-  MAX_LENGTH_EMAIL,
-  MAX_LENGTH_FIRST_NAME,
-  MAX_LENGTH_LAST_NAME,
-} from '../../utils/constants';
-import ContactPerson from '../../types/sign-up/contact-person';
-import { ShowToast } from '../../utils/utils';
-import { TEXTS } from '../../lang/fr';
-import {
   Dialog,
   DialogTitle,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
+  TextField
 } from '@mui/material';
+import { ValidatorForm } from 'react-material-ui-form-validator';
+import { Navigate } from 'react-router';
+import SignUpService from '../../api/signUp/signUpService';
+import AlertComposant from '../../components/alert/alert';
+import TeamContactPerson from '../../components/signup/team-contact-person';
+import TeamInformation from '../../components/signup/team-info';
+import TeamMemberForm from '../../components/signup/team-member';
+import { TEXTS } from '../../lang/fr';
+import APIResult from '../../types/apiResult';
+import IPage from '../../types/IPage';
+import Category from '../../types/sign-up/category';
+import ContactPerson from '../../types/sign-up/contact-person';
+import TeamInfo from '../../types/sign-up/team-info';
+import {
+  MAX_LENGTH_EMAIL,
+  MAX_LENGTH_FIRST_NAME,
+  MAX_LENGTH_LAST_NAME,
+} from '../../utils/constants';
+import { INPUT_VARIANT } from '../../utils/muiConstants';
+import { ShowToast } from '../../utils/utils';
 import styles from './ParticipantRegistrationPage.module.css';
 
 /**

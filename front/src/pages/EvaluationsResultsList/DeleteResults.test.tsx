@@ -1,8 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import EvaluationsResultsListPage from './EvaluationsResultsListPage';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as ResultServiceModule from '../../api/result/resultService';
-import ResultInfo from '../../types/results/resultInfo';
+import EvaluationsResultsListPage from './EvaluationsResultsListPage';
 
 /**
  * Tests unitaires pour la suppression des résultats dans EvaluationsResultsListPage.

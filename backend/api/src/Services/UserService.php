@@ -226,8 +226,10 @@ class UserService
      * @author Antoine Ouellette
      * @param array|object|null $requestBody Le corps de la requête contenant les informations de l'administrateur à créer.
      * @return Result Un objet contenant les informations à mettre dans le corps de la réponse.
+	 * Bugfix @author Léandre Kanmegne H-26
+	 * Correction de la validation du corps de la requête pour vérifier si le code de validation est différent de succès et retourner le résultat de la validation directement si ce n'est pas le cas, afin d'éviter des erreurs potentielles lors de la création d'un administrateur avec des données invalides.
      */
-    public function create_administrator(array|object|null $requestBody): Result
+    public function create_administrator(?array $requestBody): Result
     {
         try
         {

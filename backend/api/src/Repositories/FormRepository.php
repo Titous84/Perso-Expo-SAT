@@ -4,12 +4,10 @@ namespace App\Repositories;
 
 use App\Enums\EnumHttpCode;
 use App\Models\Result;
-use App\Models\User;
 use App\Repositories\Repository;
 use PDOException;
-use phpDocumentor\Compiler\Pass\Debug;
-use phpDocumentor\GraphViz\Exception;
-use function DI\env;
+use Exception;
+
 
 /**
  * Classe FormRepository

@@ -69,6 +69,18 @@ $app = AppFactory::create();
  */
 $app->addBodyParsingMiddleware();
 
+// Empêche le cache HTTP sur les réponses API
+// Bugfix : Ajout de middleware pour empêcher le cache HTTP sur les réponses API, ce qui garantit que les clients reçoivent toujours les données les plus récentes et évite les problèmes liés à l'affichage de données obsolètes.
+// @author Léandre Kanmegne - H26
+// Code généré par ChatGPT, modele 5.4 mars 2026
+$app->add(function ($request, $handler) {
+    $response = $handler->handle($request);
+    return $response
+        ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+        ->withHeader('Pragma', 'no-cache')
+        ->withHeader('Expires', '0');
+});
+
 /**
  * Permet les requêtes CORS
  */

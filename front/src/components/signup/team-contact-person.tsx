@@ -1,8 +1,8 @@
 /**
  * Mathieu Sévégny
  */
+import { Button, Paper } from '@mui/material';
 import Grid2 from '@mui/material/Grid2';
-import { Paper, Button } from '@mui/material';
 import React from 'react';
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { TEXTS } from '../../lang/fr';

@@ -90,9 +90,30 @@ class EvaluationGridService
      * @param $id
      * @return Result
      */
-    public function deleteEvaluationGridById($id) : Result
+        public function deleteEvaluationGridById($id) : Result
     {
         try {
+            // Bugfix : Vérifie si la grille est assignée à des catégories avant de supprimer
+            // @author Léandre Kanmegne - H26
+            $categories = $this->evaluationGridRepository->getCategoriesBySurveyId((int)$id);
+            if (!empty($categories)) {
+                $names = array_map(fn($c) => $c['name'], $categories);
+                return new Result(
+                    EnumHttpCode::BAD_REQUEST,
+                    array("Impossible de supprimer cette grille : elle est assignée aux catégories suivantes : " . implode(', ', $names) . ".")
+                );
+            }
+
+            // Bugfix : Vérifie si la grille est utilisée par des évaluations avant de supprimer
+            // @author Léandre Kanmegne - H26
+            $evaluations = $this->evaluationGridRepository->getEvaluationsBySurveyId((int)$id);
+            if (!empty($evaluations)) {
+                return new Result(
+                    EnumHttpCode::BAD_REQUEST,
+                    array("Impossible de supprimer cette grille : elle est encore utilisée par " . count($evaluations) . " évaluation(s).")
+                );
+            }
+
             if ($this->evaluationGridRepository->deleteEvaluationGridById($id)) {
                 return new Result(EnumHttpCode::SUCCESS, array('La grille d\'évaluation a été supprimé avec succès.'));
             }

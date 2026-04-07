@@ -1,12 +1,12 @@
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
-import Router from './router/router';
-import { pages, RoleName } from './router/routes';
+import 'react-toastify/dist/ReactToastify.css';
 import Footer from './components/footer/footer';
 import Loader from './components/loader/loader';
 import NavigationBar from './components/NavigationBar/NavigationBar';
-import {ActualRole as RoleClass} from './utils/roleUtil';
-import 'react-toastify/dist/ReactToastify.css';
+import Router from './router/router';
+import { pages, RoleName } from './router/routes';
+import { ActualRole as RoleClass } from './utils/roleUtil';
 
 /**
  * Composant affichant le cadre de l'application

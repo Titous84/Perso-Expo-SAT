@@ -1,7 +1,7 @@
 import APIResult from "../../types/apiResult";
+import Judge from "../../types/judge";
 import SendEvaluation from "../../types/JudgeEvaluation/sendEvaluation";
 import { APIRequest } from "../apiUtils";
-import Judge from "../../types/judge";
 
 export default class Actions {
   /**

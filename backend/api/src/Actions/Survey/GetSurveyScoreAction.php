@@ -2,7 +2,6 @@
 
 namespace App\Actions\Survey;
 
-use App\Enums\EnumHttpCode;
 use App\Services\SurveyService;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;

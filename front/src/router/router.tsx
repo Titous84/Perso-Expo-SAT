@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { Route, Routes, useLocation } from "react-router-dom"
+import { Route, Routes, useLocation } from "react-router-dom";
+import ForbiddenPage from '../pages/403/ForbiddenPage';
 import NotFoundPage from '../pages/404/NotFoundPage';
+import { ActualRole } from '../utils/roleUtil';
 import { createRandomKey } from '../utils/utils';
 import { pages, RoleName } from './routes';
-import ForbiddenPage from '../pages/403/ForbiddenPage';
-import { ActualRole } from '../utils/roleUtil';
 
 /**
  * Classe gérant le routage de l'application.\

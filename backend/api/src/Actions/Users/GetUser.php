@@ -36,12 +36,14 @@ class GetUser
 	 * @param Response $response Objet de réponse PSR-7.
 	 * @param array $args Arguments passés dans la requête.
 	 * @return ResponseInterface Réponse retournée par la route.
+	 * Bugfix : Correction des variables mal nommées dans la fonction __invoke de la classe GetUser
+	 * @author Léandre Kanmegne H-26
 	 */
 	public function __invoke(Request $request, Response $response, $args): ResponseInterface
-	{
-        $id = $request->getAttribute('token');
-        $resultGetUser = $this->userService->get_user_by_activation_token($token);
-		$response->getBody()->write($resultGetAllUsers->to_json());
-		return $response->withStatus($resultGetAllUsers->get_http_code());
-	}
+{
+    $token = $request->getAttribute('token');
+    $resultGetUser = $this->userService->get_user_by_activation_token($token);
+    $response->getBody()->write($resultGetUser->to_json());
+    return $response->withStatus($resultGetUser->get_http_code());
+}
 }

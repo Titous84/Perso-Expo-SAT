@@ -10,13 +10,13 @@ import {
 import { blue, green, grey, orange, purple, red } from '@mui/material/colors';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
 import { SvgIconTypeMap } from '@mui/material/SvgIcon/SvgIcon';
+import AdministratorsListPage from '../../pages/AdministratorsList/AdministratorsListPage';
+import CategoriesListPage from '../../pages/CategoriesList/CategoriesListPage';
 import EvaluationGridsListPage from '../../pages/EvaluationGridsList/EvaluationGridsListPage';
 import EvaluationsResultsListPage from '../../pages/EvaluationsResultsList/EvaluationsResultsListPage';
 import JudgesListPage from '../../pages/JudgesList/JudgesListPage';
 import JudgesSchedulesPage from '../../pages/JudgesSchedules/JudgesSchedulesPage';
 import TeamsListPage from '../../pages/TeamsList/TeamsListPage';
-import AdministratorsListPage from '../../pages/AdministratorsList/AdministratorsListPage';
-import CategoriesListPage from '../../pages/CategoriesList/CategoriesListPage';
 
 /**
  * Un onglet dans la barre latérale de navigation de la page d'administration.

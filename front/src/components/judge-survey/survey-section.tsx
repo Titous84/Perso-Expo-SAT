@@ -1,11 +1,11 @@
-import { Alert, CircularProgress, TextField } from '@mui/material';
+import { Alert, CircularProgress } from '@mui/material';
 import React from 'react';
-import { TEXTS } from '../../lang/fr';
-import HorizontalNonLinearStepper from '../stepper/horizontal-non-linear-stepper';
-import { IJudgeSection } from '../../types/survey/IJudgeSection';
-import SurveyQuestion from './survey-question';
 import SurveyService from '../../api/survey/surveyService';
+import { TEXTS } from '../../lang/fr';
+import { IJudgeSection } from '../../types/survey/IJudgeSection';
 import ButtonExposat from '../button/button-exposat';
+import HorizontalNonLinearStepper from '../stepper/horizontal-non-linear-stepper';
+import SurveyQuestion from './survey-question';
 
 /**
  * @author Christopher Boisvert

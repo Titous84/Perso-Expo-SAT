@@ -7,12 +7,13 @@ use App\Models\Result;
 use App\Models\Team;
 use App\Repositories\SignUpTeamRepository;
 use App\Validators\ValidatorTeam;
-use App\Fabricators\Emails\EmailValidationFabricator;
 use App\Fabricators\Emails\EmailContactPersonFabricator;
 use App\Services\EmailService;
 use App\Services\TwigService;
 use App\Utils\GeneratorUUID;
 use Exception;
+use App\Handlers\LogHandler;
+
 
 /**
  * SignUpTeamService
@@ -24,6 +25,13 @@ class SignUpTeamService{
 	 * @var SignUpTeamRepository Dépôt lié à la bdd permettant d'accéder à l'inscription.
 	 */
 	private $signUpTeamRepository;
+
+    /**
+     * @var LogHandler Permet d'avoir assez à la classe LogHandler
+     * Bugfix @author Léandre Kanmegne H-26
+     * Correction de la déclaration de la variable $logHandler pour spécifier le type LogHandler
+     */
+    private $logHandler;
     
     /**
      * validatorTeam
@@ -46,20 +54,15 @@ class SignUpTeamService{
      */
     private $twigService;
     
-    /**
-     * generatorUUID
-     *
-     * @var GeneratorUUID Permet d'avoir assez à la classe GeneratorUUID
-     */
-    private $generatorUUID;
 	/**
 	 * __construct
 	 * @param  mixed $signUpTeamRepository
 	 * @param  mixed $validatorTeam
 	 * @return void
 	 */
-	public function __construct( SignUpTeamRepository $signUpTeamRepository, ValidatorTeam $validatorTeam, EmailService $emailService, TwigService $twigService )
+	public function __construct( SignUpTeamRepository $signUpTeamRepository, ValidatorTeam $validatorTeam, EmailService $emailService, TwigService $twigService, LogHandler $logHandler )
     {
+        $this->logHandler = $logHandler;
         $this->signUpTeamRepository = $signUpTeamRepository;
         $this->validatorTeam = $validatorTeam;
         $this->emailService = $emailService;

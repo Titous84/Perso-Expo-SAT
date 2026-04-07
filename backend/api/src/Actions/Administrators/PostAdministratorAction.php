@@ -2,14 +2,12 @@
 
 namespace App\Actions\Administrators;
 
-use App\Handlers\LogHandler;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use App\Services\UserService;
 use App\Services\TokenService;
 use App\Utils\TokenUtils;
-use App\Models\Administrators\AdministratorToCreate;
 
 /**
  * Classe pour gérer l'action de création d'un administrateur.

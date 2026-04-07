@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import TeamsListPage from './TeamsListPage';
 import { MemoryRouter } from 'react-router-dom';
+import TeamsListPage from './TeamsListPage';
 
 test('renders inscription page', async () => {
   render(<TeamsListPage />, {wrapper: MemoryRouter});

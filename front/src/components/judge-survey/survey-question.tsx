@@ -1,4 +1,4 @@
-import { Slider, TextField } from '@mui/material';
+import { Slider } from '@mui/material';
 import React from 'react';
 import SurveyService from '../../api/survey/surveyService';
 import { IJudgeQuestion } from '../../types/survey/IJudgeQuestion';

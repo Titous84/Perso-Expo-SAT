@@ -7,7 +7,6 @@ use App\Models\Team;
 use App\Models\Result;
 use PDO;
 use PDOException;
-use Test\TestsUtils\TestLogger;
 
 /**
  * Classe SignUpTeamRepository.php
@@ -27,13 +26,19 @@ class SignUpTeamRepository extends Repository
      * @param Team $team L'équipe à ajouter
      * @param array $token Le token de connexion
      * @return Result
+     * Bugfix : Correction de la génération du numéro d'équipe pour garantir l'incrémentation et éviter les conflits, et amélioration de la gestion des erreurs pour assurer la cohérence des données en cas de problème lors de l'ajout de l'équipe ou de ses membres.
+     * @author Nathan Reyes
+      * @author Léandre Kanmegne - H26
      */
     public function add_team(Team $team, array $token):Result
     {
         try{
-            $categoryArray= $this->get_category($team->category);
-            if(sizeOf($categoryArray) < 0){
+            $categoryArray = $this->get_category($team->category);
+            if($categoryArray === null || sizeOf($categoryArray) < 0){
                 return new Result(EnumHttpCode::BAD_REQUEST, array("Une ereur est survenue lors de la récupération des catégories"));
+            }
+            if (empty($categoryArray["survey_id"])) {
+                return new Result(EnumHttpCode::BAD_REQUEST, array("La catégorie sélectionnée n'a pas de grille d'évaluation assignée. Contactez l'administration."));
             }
             // Générer systématiquement le numéro d'équipe côté serveur pour garantir l'incrémentation.
             // @author Nathan Reyes
@@ -557,27 +562,43 @@ public function get_member_by_numero_da_and_survey(string $numero_da, string $ca
      * Permet de supprimer une équipe à partir de l'id de l'équipe
      * @param  int $id L'id de l'équipe
      * @return string
+     * Bugfix : Suppression de toutes les relations et données associées à l'équipe avant de supprimer l'équipe elle-même pour éviter les erreurs de clé étrangère.
+     * @auther : Léandre Kanmegne - H26
      */
     public function delete_team(int $id): bool
-    {
-        try {
-            // Suppression des relations entre l'équipe et ses membres
-            $this->delete_users_team($id);
+{
+    try {
+        // Suppression des relations entre l'équipe et ses membres
+        $this->delete_users_team($id);
 
-            // Suppression des relations entre l'équipe et les personnes ressources
-            $this->delete_teams_contact_person($id);
+        // Suppression des relations entre l'équipe et les personnes ressources
+        $this->delete_teams_contact_person($id);
 
-            // Suppression de l'équipe
-            $sql = "DELETE FROM teams WHERE id = :id";
-            $req = $this->db->prepare($sql);
-            $req->execute(["id" => $id]);
+        // Suppression des criteria_evaluation liés aux évaluations de l'équipe
+        $sql = "DELETE criteria_evaluation FROM criteria_evaluation
+                INNER JOIN evaluation ON criteria_evaluation.evaluation_id = evaluation.id
+                WHERE evaluation.teams_id = :id";
+        $req = $this->db->prepare($sql);
+        $req->execute(["id" => $id]);
 
-            return $req->rowCount() > 0;
-        }
-        catch (PDOException $e) {
-            return false;
-        }
+        // Suppression des évaluations de l'équipe
+        $sql = "DELETE FROM evaluation WHERE teams_id = :id";
+        $req = $this->db->prepare($sql);
+        $req->execute(["id" => $id]);
+
+        // Suppression de l'équipe
+        $sql = "DELETE FROM teams WHERE id = :id";
+        $req = $this->db->prepare($sql);
+        $req->execute(["id" => $id]);
+
+        return $req->rowCount() > 0;
     }
+    catch (PDOException $e) {
+        $context["http_error_code"] = $e->getCode();
+        $this->logHandler->critical($e->getMessage(), $context);
+        return false;
+    }
+}
     
     /**
      * delete_all_team_members

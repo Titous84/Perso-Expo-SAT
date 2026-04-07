@@ -6,10 +6,7 @@ use App\Services\UserService;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
-use App\Utils\TokenUtils;
-use App\Models\Result;
 use App\Enums\EnumHttpCode;
-use App\Services\TokenService;
 
 /**
  * Classe permettant d'ajouter un user.

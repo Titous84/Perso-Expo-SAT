@@ -1,10 +1,10 @@
 /**
  * @author Tristan Lafontaine
  */
-import * as React from "react";
-import Typography from "@mui/material/Typography";
-import { Fade, IconButton, Paper, Popper } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { Fade, IconButton, Paper, Popper } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
 import styles from "./../../pages/ParticipantRegistration/ParticipantRegistrationPage.module.css";
 
 interface PopoverProps {

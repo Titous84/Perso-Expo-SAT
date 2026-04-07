@@ -4,7 +4,6 @@ namespace App\Actions\Resultat;
 
 use App\Services\ResultatService;
 use Psr\Http\Message\ResponseInterface;
-use App\Enums\EnumHttpCode;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use App\Services\TokenService;

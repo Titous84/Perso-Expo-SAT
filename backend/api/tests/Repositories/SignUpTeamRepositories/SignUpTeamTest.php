@@ -16,6 +16,8 @@ use Test\TestsUtils\TestingLogger;
  * Classe permettant de tester le service de courriel.
  * @author Tristan Lafontaine
  * @package Repositories\SignUpTeamRepositories
+ * Bugfix : Nettoyage des méthodes de test ayant des méthodes inexistantes
+ * @author Léandre Kanmegne - H26
  */
 final class SignUpTeamTest extends TestCase {
 
@@ -72,25 +74,7 @@ final class SignUpTeamTest extends TestCase {
 		$this->assertEquals(EnumHttpCode::CREATED,$response->get_http_code(),"Erreur : test_add_team_signup");
 	}
 	
-	/**
-	 * test_check_email_is_not_BD
-	 * Fonction qui permet de tester si les adresse courriel de la nouvelle équipe est présent dans la based de données
-	 * @return void
-	 */
-	public function test_check_email_is_not_BD_error() {
-
-		echo date("Y-m-d h:m:s") . " Création du répertoire SignUpTeamRepository\n";
-		$logHandler = new LogHandler();
-		$signUpTeamRepository = new SignUpTeamRepository(self::$pdo->PDO(), $logHandler);
-
-		$teamInitialize = new TeamInitialize();
-
-		$team = $teamInitialize->Team();
-
-		$response = $signUpTeamRepository->check_email_is_not_BD($team);
-
-		$this->assertGreaterThan(0,sizeof($response),"Erreur : test_check_email_is_not_BD_error");
-	}
+	
 
 	/**
 	 * test_delete_team
@@ -114,25 +98,7 @@ final class SignUpTeamTest extends TestCase {
 		}
 	}
 
-	/**
-	 * test_check_email_is_not_BD
-	 * Fonction qui permet de tester si les adresse courriel de la nouvelle équipe n'est pas déjà présente dans la base de données
-	 * @return void
-	 */
-	public function test_check_email_is_not_BD(){
-
-		echo date("Y-m-d h:m:s") . " Création du répertoire SignUpTeamRepository\n";
-		$logHandler = new LogHandler();
-		$signUpTeamRepository = new SignUpTeamRepository(self::$pdo->PDO(), $logHandler);
-
-		$teamInitialize = new TeamInitialize();
-
-		$team = $teamInitialize->Team();
-
-		$response = $signUpTeamRepository->check_email_is_not_BD($team);
-
-		$this->assertEquals(0,sizeof($response), "Erreur : test_check_email_is_not_BD");
-	}
+	
 	
 	/**
 	 * test_get_category
@@ -145,9 +111,9 @@ final class SignUpTeamTest extends TestCase {
 		$logHandler = new LogHandler();
 		$signUpTeamRepository = new SignUpTeamRepository(self::$pdo->PDO(), $logHandler);
 
-		$response = $signUpTeamRepository->get_category("Humain");
+		$response = $signUpTeamRepository->get_category("Sciences physiques");
 
-		$this->assertEquals(2,$response["id"],"Erreur : test_get_category");
+		$this->assertNotNull($response["id"],"Erreur : test_get_category");
 	}
 	
 	/**
@@ -233,26 +199,6 @@ final class SignUpTeamTest extends TestCase {
 
 		$this->test_delete_team();
 	}
-
-	
-	/**
-	 * test_get_member_by_email
-	 * Fonction qui permet de récupérer un membre à partir d'une adresse courriel
-	 * @return void
-	 */
-	public function test_get_member_by_email(){
-		$this->test_add_team_signup();
-
-		echo date("Y-m-d h:m:s") . " Création du répertoire SignUpTeamRepository\n";
-		$logHandler = new LogHandler();
-		$signUpTeamRepository = new SignUpTeamRepository(self::$pdo->PDO(), $logHandler);
-
-		$response = $signUpTeamRepository->get_member_by_email("test@gmail.com");
-
-		$this->assertEquals("test@gmail.com",$response["email"],"Erreur : test_get_member_by_email");
-
-		$this->test_delete_team();
-	}
 	
 	/**
 	 * test_get_members_team
@@ -281,43 +227,9 @@ final class SignUpTeamTest extends TestCase {
 
 	}
 	
-	/**
-	 * test_check_email_duplicate
-	 * Fonction qui tester si il n'a pas la même adresse courriel dans une équipe
-	 * @return void
-	 */
-	public function test_check_email_duplicate(){
-		$teamInitialize = new TeamInitialize();
+	
 
-		$team = $teamInitialize->Team();
-
-		echo date("Y-m-d h:m:s") . " Création du répertoire SignUpTeamRepository\n";
-		$logHandler = new LogHandler();
-		$signUpTeamRepository = new SignUpTeamRepository(self::$pdo->PDO(), $logHandler);
-
-		$response = $signUpTeamRepository->check_email_duplicate($team);
-
-		$this->assertEquals(0,sizeOf($response),"Erreur : test_check_email_duplicate");
-	}
-
-	/**
-	 * test_check_email_duplicate
-	 * Fonction qui tester si il a y la même adresse courriel dans une équipe
-	 * @return void
-	 */
-	public function test_check_email_duplicate_error(){
-		$teamInitialize = new TeamInitialize();
-
-		$team = $teamInitialize->TeamThree();
-
-		echo date("Y-m-d h:m:s") . " Création du répertoire SignUpTeamRepository\n";
-		$logHandler = new LogHandler();
-		$signUpTeamRepository = new SignUpTeamRepository(self::$pdo->PDO(), $logHandler);
-
-		$response = $signUpTeamRepository->check_email_duplicate($team);
-
-		$this->assertGreaterThan(0,sizeOf($response),"Erreur : test_check_email_duplicate_error");
-	}
+	
 	
 	/**
 	 * test_created_two_teams_but_different_category

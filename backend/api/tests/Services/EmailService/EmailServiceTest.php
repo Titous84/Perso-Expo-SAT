@@ -7,6 +7,7 @@ use App\Models\Email;
 use App\Services\EmailService;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPUnit\Framework\TestCase;
+use App\Handlers\LogHandler;
 use Symfony\Component\Dotenv\Dotenv;
 use Test\TestsUtils\TestingLogger;
 use function PHPUnit\Framework\assertEquals;
@@ -15,6 +16,8 @@ use function PHPUnit\Framework\assertEquals;
  * Classe permettant de tester le service de courriel.
  * @author Christopher Boisvert
  * @package Services\EmailService
+ * Bugfix : Ajout de LogHandler en parametre
+ * @author Léandre Kanmegne - H26
  */
 class EmailServiceTest extends TestCase {
 
@@ -53,7 +56,7 @@ class EmailServiceTest extends TestCase {
 		$phpMailer = new PHPMailer(true);
 
 		TestingLogger::log("Création de l'objet CourrielService");
-		$emailService = new EmailService($phpMailer);
+		$emailService = new EmailService($phpMailer, new LogHandler());
 
 		TestingLogger::log("Envoi du courriel à ". $email->receiver);
 		$resultEmailSent = $emailService->send_mail($email);

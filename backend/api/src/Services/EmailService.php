@@ -7,7 +7,8 @@ use App\Models\Email;
 use App\Models\Result;
 use Exception;
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
+use App\Handlers\LogHandler;
+
 
 /**
  * Classe EmailService permet d'envoyer des courriels.
@@ -18,19 +19,24 @@ class EmailService
 {
 	/**
 	 * @var PHPMailer Permet d'envoyer des courriels.
+	 * Bugfix @author Léandre Kanmegne H-26
+	 * Correction de la déclaration de la variable $logHandler pour spécifier le type LogHandler
 	 */
 	public $phpMailer;
+	private $logHandler;
 
 	/**
 	 * EmailService constructeur.
 	 *
 	 * @param PHPMailer $phpMailer
+	 * @param LogHandler $logHandler
 	 */
 	//TODO: $mail->msgHTML(file_get_contents('contents.html'), __DIR__);
-	public function __construct( PHPMailer $phpMailer )
+	public function __construct( PHPMailer $phpMailer, LogHandler $logHandler )
 	{
 		$this->phpMailer = $phpMailer;
 		$this->phpMailer->XMailer = " ";
+		$this->logHandler = $logHandler;
 
 		$this->phpMailer->isSMTP();
 		$this->phpMailer->Host       = $_ENV["name_mail_server"];

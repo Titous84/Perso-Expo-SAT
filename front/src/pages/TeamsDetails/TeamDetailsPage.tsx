@@ -1,8 +1,8 @@
+import { ArrowBack as ArrowBackIcon, Send as SendIcon } from '@mui/icons-material';
+import { Box, Button } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Button } from '@mui/material';
-import { ArrowBack as ArrowBackIcon, Send as SendIcon } from '@mui/icons-material';
-import { DataGrid } from '@mui/x-data-grid';
 import { EnhancedResultInfo } from '../EvaluationsResultsList/EvaluationsResultsListPage';
 import './TeamDetailsPage.css';
 

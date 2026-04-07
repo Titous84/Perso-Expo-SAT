@@ -2,7 +2,6 @@
 
 namespace App\Actions\Stand;
 
-use App\Enums\EnumHttpCode;
 use App\Services\StandService;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;

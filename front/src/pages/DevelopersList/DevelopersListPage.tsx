@@ -1,7 +1,7 @@
-import IPage from "../../types/IPage";
 import Layout from "../../components/layout/layout";
-import styles from './DevelopersListPage.module.css'
 import { TEXTS } from '../../lang/fr';
+import IPage from "../../types/IPage";
+import styles from './DevelopersListPage.module.css';
 
 export default class DevelopersListPage extends IPage {
     constructor(props: {}){
@@ -25,10 +25,11 @@ export default class DevelopersListPage extends IPage {
         const annee2023 : string[] = ['Année 2023','Déreck "NanoBoy" Lachance', 'Raphaël Steeve Joseph Boisvert', 'Raphaël "Raph" Nadeau', 'Samuel "2citron" Lambert', 'Maxime Demers-Boucher'];
         const annee2024 : string[] = ['Année 2024','Jean-Christophe Demers', 'Thomas-Gabriel Paquin', 'Xavier Houle', 'Francis Payan'];
         const annee2025 : string[] = ['Année 2025','Étienne Nadeau', 'Tommy Garneau', 'Carlos Cordeiro', 'Antoine Ouellette','Alexis Boivin'];
+        const annee2026 : string[] = ['Année 2026','Léandre Kanmegne', 'Breno Gomes ', 'Nathan Reyes', 'Morgan Boissonneault'];
         /**
          * Ajouter les années au tableau des développeurs pour présenter un tableau
          */
-        const developpeurs : string[][] = [annee2025, annee2024, annee2023, annee2022]
+        const developpeurs : string[][] = [annee2026, annee2025, annee2024, annee2023, annee2022]
         
         return developpeurs.map(annee => {
             /* retourne la table dans <Layout> */

@@ -1,14 +1,26 @@
-import React from 'react';
-import { Typography, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Delete as DeleteIcon } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Button } from '@mui/material';
-import { TEXTS } from '../../lang/fr';
-import styles from './EvaluationsResultsListPage.module.css';
-import { ShowToast } from '../../utils/utils';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import ResultService from '../../api/result/resultService';
+import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
+import { TEXTS } from '../../lang/fr';
 import ResultInfo from '../../types/results/resultInfo';
+import { ShowToast } from '../../utils/utils';
 import EvaluationResultsToolbar from './EvaluationResultsTableToolBar';
+import styles from './EvaluationsResultsListPage.module.css';
 
 /**
  * NavigateButtonProps est une interface pour les propriétés du composant NavigateButton.
@@ -94,11 +106,20 @@ export interface EnhancedResultInfo extends ResultInfo {
  * 
  */
 interface EvaluationsResultsListPageState {
-    results: EnhancedResultInfo[];
-    excludedScores: { [teamName: string]: { [judgeName: string]: boolean } };
-    resetKey: number; // Clé pour réinitialiser les tri du tableau 
-    selectedRows: number[];
-    selectedJudgeScores: { teamName: string, judgeId: number }[];
+  results: EnhancedResultInfo[];
+  excludedScores: { [teamName: string]: { [judgeName: string]: boolean } };
+  resetKey: number; // Clé pour réinitialiser les tri du tableau
+  selectedRows: number[];
+  selectedJudgeScores: { teamName: string; judgeId: number }[];
+  // Dialog de confirmation pour la suppression des notes sélectionnées
+  // @author Léandre Kanmegne - H26
+  isConfirmDeleteOpen: boolean;
+  isConfirmDeleteTeamsOpen: boolean;
+  // Dialog pour les détails de l'équipe
+  // @author Léandre Kanmegne - H26
+  detailTeam: EnhancedResultInfo | null;
+  deleteTarget: { teamName: string; judgeId: number } | null;
+  isConfirmDeleteJudgeOpen: boolean;
 }
 
 /**
@@ -151,6 +172,11 @@ class EvaluationsResultsListPage extends React.Component<
       resetKey: 0,
       selectedRows: [],
       selectedJudgeScores: [],
+      isConfirmDeleteOpen: false,
+      detailTeam: null,
+      deleteTarget: null,
+      isConfirmDeleteJudgeOpen: false,
+      isConfirmDeleteTeamsOpen: false,
     };
   }
 
@@ -164,8 +190,8 @@ class EvaluationsResultsListPage extends React.Component<
   async componentDidMount() {
     // Bugfix : Ajoute une vérification pour éviter les appels d'API redondants causés par React StrictMode en mode développement, en utilisant une variable d'instance pour suivre si le composant a déjà été monté.
     // @author Léandre Kanmegne - H26
-     if (this.hasMounted) return;
-        this.hasMounted = true;
+    if (this.hasMounted) return;
+    this.hasMounted = true;
 
     await this.getInfos(true); // Récupère les infos existantes
     await this.fetchJudgeScoreExclusions(); // Fonction pour récupérer l'état d'exclusion des notes des juges
@@ -469,7 +495,20 @@ class EvaluationsResultsListPage extends React.Component<
         return result; // Retourne l'équipe sans modification si ce n'est pas l'équipe concernée
       });
 
-      return { ...prevState, results: resultsCopy }; // Retourne l'état avec les résultats mis à jour
+      // Bugfix : Mise à jour du detailTeam pour rafraîchir le dialog en temps réel
+      // @author Léandre Kanmegne - H26
+      // Code généré par ChatGPT et Copilot, avec correction de la logique pour trouver la bonne équipe dans les résultats mis à jour.
+      const updatedDetailTeam = prevState.detailTeam
+        ? resultsCopy.find(
+            (r) => r.teams_name === prevState.detailTeam!.teams_name,
+          ) || null
+        : null;
+
+      return {
+        ...prevState,
+        results: resultsCopy,
+        detailTeam: updatedDetailTeam,
+      }; // Retourne l'état avec les résultats mis à jour
     });
   };
 
@@ -568,109 +607,240 @@ class EvaluationsResultsListPage extends React.Component<
 
   /**
    * Rendu du composant ResultsList.
-   *
-   * @author Francis Payan
-   * @author Tommy Garneau
-   * Inspiré du fichier tableTeamInfo.tsx
+   * @author Léandre Kanmegne - H26
    * Code partiellement généré par ChatGPT et Copilot.
    * @see https://www.chatgpt.com/
    */
   render() {
-    // Quelles colonnes on veut afficher et sous quel nom.
     const columns: GridColDef[] = [
-      { field: 'categorie', headerName: 'Catégorie', flex: 0.5 },
-      { field: 'teams_name', headerName: "Nom de l'équipe", flex: 0.5 },
-      {
-        field: 'judgeScores',
-        headerName: 'Note du juge',
-        flex: 1,
-        renderCell: (params) => {
-          const currentResultRow = params.row as ResultRowData;
-          return (
-            <div className={styles.judgeScoresContainer}>
-              {currentResultRow.judgeScores.map((judgeScore, index) => (
-                <div key={index} className={styles.judgeScoreWrapper}>
-                  {/* Checkbox pour sélectionner/désélectionner la note du juge */}
-                  <input
-                    type="checkbox"
-                    checked={this.state.selectedJudgeScores.some(
-                      // Vérifie si la note du juge est sélectionnée
-                      (selected) =>
-                        selected.teamName === currentResultRow.teams_name &&
-                        selected.judgeId === judgeScore.judge_id,
-                    )}
-                    // Appelle la fonction pour gérer la sélection de la note du juge
-                    onChange={(e) =>
-                      this.handleJudgeScoreSelection(
-                        e.target.checked,
-                        currentResultRow.teams_name,
-                        judgeScore.judge_id,
-                      )
-                    }
-                  />
-                  <span className={styles.judgeScore}>
-                    {`${judgeScore.judgeName ?? 'Inconnu'} (${judgeScore.score ?? 0}%)`}
-                  </span>
-                </div>
-              ))}
-            </div>
-          );
-        },
-      },
+      { field: 'categorie', headerName: 'Catégorie', flex: 1 },
+      { field: 'teams_name', headerName: "Nom de l'équipe", flex: 1 },
       {
         field: 'finalScore',
-        headerName: "Note finale de l'équipe (en %)",
-        width: 202,
+        headerName: 'Note finale (%)',
+        width: 150,
         valueFormatter: (value) =>
-          value != null && !isNaN(value) ? `${value}` : 'N/A', // Affiche "N/A" si la note finale n'est pas disponible ou n'est pas un nombre
+          value != null && !isNaN(value) ? `${value}%` : 'N/A',
       },
       {
-        field: 'comments',
-        headerName: "Commentaires de l'équipe",
-        flex: 1,
+        field: 'actions',
+        headerName: 'Actions',
+        width: 150,
+        sortable: false,
+        filterable: false,
+        renderCell: (params) => (
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() =>
+              this.openTeamDetail(params.row as EnhancedResultInfo)
+            }
+          >
+            Voir détails
+          </Button>
+        ),
       },
     ];
 
+    const { detailTeam } = this.state;
+
     return (
-      <Box sx={{ height: 600, width: '100%' }}>
-        <Typography
-          variant="h4"
-          className={styles.title}
-          sx={{ mt: 4, mb: 2, fontWeight: 'bold' }}
+      <>
+        {/* Dialog confirmation suppression depuis toolbar */}
+        <ConfirmationDialog
+          parentIsDialogOpen={this.state.isConfirmDeleteOpen}
+          parentSetIsDialogOpen={
+            ((open: boolean) =>
+              this.setState({ isConfirmDeleteOpen: open })) as React.Dispatch<
+              React.SetStateAction<boolean>
+            >
+          }
+          title={'Confirmation de suppression'}
+          content={
+            'Êtes-vous sûr de vouloir supprimer les résultats sélectionnés?'
+          }
+          confirmationButtonText={'Supprimer'}
+          confirmationButtonOnClick={this.deleteJudgeScores}
+        />
+
+        {/* Dialog confirmation suppression note individuelle */}
+        <ConfirmationDialog
+          parentIsDialogOpen={this.state.isConfirmDeleteJudgeOpen}
+          parentSetIsDialogOpen={
+            ((open: boolean) =>
+              this.setState({
+                isConfirmDeleteJudgeOpen: open,
+              })) as React.Dispatch<React.SetStateAction<boolean>>
+          }
+          title={'Confirmation de suppression'}
+          content={'Êtes-vous sûr de vouloir supprimer cette note de juge?'}
+          confirmationButtonText={'Supprimer'}
+          confirmationButtonOnClick={this.deleteSingleJudgeScore}
+        />
+
+        {/* Dialog confirmation suppression résultats équipes sélectionnées */}
+        <ConfirmationDialog
+          parentIsDialogOpen={this.state.isConfirmDeleteTeamsOpen}
+          parentSetIsDialogOpen={
+            ((open: boolean) =>
+              this.setState({
+                isConfirmDeleteTeamsOpen: open,
+              })) as React.Dispatch<React.SetStateAction<boolean>>
+          }
+          title={'Confirmation de suppression'}
+          content={
+            'Êtes-vous sûr de vouloir supprimer tous les résultats des équipes sélectionnées?'
+          }
+          confirmationButtonText={'Supprimer'}
+          confirmationButtonOnClick={this.deleteSelectedTeamsResults}
+        />
+
+        {/* Dialog de détails de l'équipe */}
+        <Dialog
+          open={detailTeam !== null}
+          onClose={() => this.setState({ detailTeam: null })}
+          maxWidth="md"
+          fullWidth
         >
-          {TEXTS.admin.resultats.layout1.link1}
-        </Typography>
-        <div className="my-custom-table">
-          <DataGrid
-            pageSizeOptions={[25, 50, 100]}
-            initialState={{
-              pagination: {
-                paginationModel: { pageSize: 100 },
-              },
-            }}
-            rows={this.state.results}
-            columns={columns}
-            checkboxSelection
-            disableRowSelectionOnClick
-            onRowSelectionModelChange={(newSelection) => {
-              const selectedIds = newSelection.map((id) => Number(id));
-              this.setState({ selectedRows: selectedIds });
-            }}
-            sx={{ width: '100%', minHeight: 400 }}
-            slots={{
-              toolbar: () => (
-                <EvaluationResultsToolbar
-                  sendInfo={this.sendInfo}
-                  deleteJudgeScores={this.deleteJudgeScores}
-                  selectedRows={this.state.selectedRows}
-                  selectedJudgeScores={this.state.selectedJudgeScores}
-                  results={this.state.results} // Passer les résultats comme prop
-                />
-              ),
-            }}
-          />
-        </div>
-      </Box>
+          <DialogTitle>Détails — {detailTeam?.teams_name}</DialogTitle>
+          <DialogContent dividers>
+            {detailTeam && (
+              <>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  <strong>Catégorie :</strong> {detailTeam.categorie}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 2 }}>
+                  <strong>Note finale :</strong>{' '}
+                  {detailTeam.finalScore != null
+                    ? `${detailTeam.finalScore}%`
+                    : 'N/A'}
+                </Typography>
+
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: 'bold', mb: 1 }}
+                >
+                  Notes des juges
+                </Typography>
+
+                {detailTeam.judgeScores.map((judgeScore, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      p: 1.5,
+                      mb: 1,
+                      borderRadius: 1,
+                      bgcolor: judgeScore.isChecked
+                        ? 'action.disabledBackground'
+                        : 'background.paper',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      opacity: judgeScore.isChecked ? 0.6 : 1,
+                    }}
+                  >
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="body1">
+                        <strong>{judgeScore.judgeName}</strong> —{' '}
+                        {judgeScore.score}%
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {judgeScore.comments || 'Aucun commentaire'}
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Tooltip
+                        title={
+                          judgeScore.isChecked
+                            ? 'Inclure dans le calcul'
+                            : 'Exclure du calcul'
+                        }
+                      >
+                        <Checkbox
+                          checked={judgeScore.isChecked}
+                          onChange={() =>
+                            this.toggleJudgeScore(
+                              detailTeam.teams_name,
+                              judgeScore.judgeName,
+                            )
+                          }
+                          size="small"
+                        />
+                      </Tooltip>
+                      <Tooltip title="Supprimer cette note">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() =>
+                            this.openDeleteJudgeConfirmation(
+                              detailTeam.teams_name,
+                              judgeScore.judge_id,
+                            )
+                          }
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Box>
+                ))}
+              </>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.setState({ detailTeam: null })}>
+              Fermer
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Tableau principal */}
+        <Box sx={{ height: 600, width: '100%' }}>
+          <Typography
+            variant="h4"
+            className={styles.title}
+            sx={{ mt: 4, mb: 2, fontWeight: 'bold' }}
+          >
+            {TEXTS.admin.resultats.layout1.link1}
+          </Typography>
+          <div className="my-custom-table">
+            <DataGrid
+              pageSizeOptions={[25, 50, 100]}
+              initialState={{
+                pagination: {
+                  paginationModel: { pageSize: 100 },
+                },
+              }}
+              rows={this.state.results}
+              columns={columns}
+              checkboxSelection
+              disableRowSelectionOnClick
+              onRowSelectionModelChange={(newSelection) => {
+                const selectedIds = newSelection.map((id) => Number(id));
+                this.setState({ selectedRows: selectedIds });
+              }}
+              sx={{ width: '100%', minHeight: 400 }}
+              slots={{
+                toolbar: () => (
+                  <EvaluationResultsToolbar
+                    sendInfo={this.sendInfo}
+                    deleteJudgeScores={this.openDeleteConfirmation}
+                    deleteSelectedTeamsResults={
+                      this.openDeleteTeamsConfirmation
+                    }
+                    selectedRows={this.state.selectedRows}
+                    selectedJudgeScores={this.state.selectedJudgeScores}
+                    results={this.state.results}
+                  />
+                ),
+              }}
+            />
+          </div>
+        </Box>
+      </>
     );
   }
 
@@ -680,14 +850,23 @@ class EvaluationsResultsListPage extends React.Component<
    * Bugfix : Remplace la mise à jour manuelle de l'état local par un appel à l'API pour supprimer les notes sélectionnées, puis rafraîchit les données après la suppression.
    * @author : Léandre Kanmegne - H26
    */
+  openDeleteConfirmation = () => {
+    if (this.state.selectedJudgeScores.length === 0) {
+      ShowToast(
+        'Aucune note sélectionnée pour la suppression.',
+        5000,
+        'warning',
+        'top-center',
+        false,
+      );
+      return;
+    }
+    this.setState({ isConfirmDeleteOpen: true });
+  };
+
   deleteJudgeScores = async () => {
+    this.setState({ isConfirmDeleteOpen: false });
     const { selectedJudgeScores } = this.state;
-
-    const confirmation = window.confirm(
-      'Êtes-vous sûr de vouloir supprimer les résultats sélectionnés?',
-    );
-    if (!confirmation) return;
-
     try {
       const promises = selectedJudgeScores.map(({ teamName, judgeId }) =>
         ResultService.deletesJudgeScore(teamName, judgeId),
@@ -714,7 +893,108 @@ class EvaluationsResultsListPage extends React.Component<
    */
   async sendInfo(result: ResultInfo | undefined) {
     // TODO: Implémenter l'envoi des informations par courriel.
+    ShowToast(
+      'Cette fonctionnalité est à venir.',
+      5000,
+      'info',
+      'top-center',
+      false,
+    );
   }
+
+  /**
+   * Ouvre le dialog de détails pour une équipe
+   * @author Léandre Kanmegne - H26
+   */
+  openTeamDetail = (team: EnhancedResultInfo) => {
+    this.setState({ detailTeam: team });
+  };
+
+  /**
+   * Ouvre la confirmation de suppression d'une note de juge individuelle
+   * @author Léandre Kanmegne - H26
+   */
+  openDeleteJudgeConfirmation = (teamName: string, judgeId: number) => {
+    this.setState({
+      deleteTarget: { teamName, judgeId },
+      isConfirmDeleteJudgeOpen: true,
+    });
+  };
+
+  /**
+   * Supprime une note de juge individuelle depuis le dialog de détails
+   * @author Léandre Kanmegne - H26
+   */
+  deleteSingleJudgeScore = async () => {
+    this.setState({ isConfirmDeleteJudgeOpen: false });
+    const { deleteTarget } = this.state;
+    if (!deleteTarget) return;
+
+    try {
+      await ResultService.deletesJudgeScore(
+        deleteTarget.teamName,
+        deleteTarget.judgeId,
+      );
+      this.ShowSuccess('La note du juge a été supprimée avec succès.');
+
+      this.setState({ deleteTarget: null, detailTeam: null });
+      await this.getInfos();
+      await this.fetchJudgeScoreExclusions();
+    } catch (error) {
+      this.ShowErrors('Une erreur est survenue lors de la suppression.');
+    }
+  };
+
+  /**
+   * Ouvre la confirmation de suppression des équipes sélectionnées (toutes leurs notes)
+   * @author Léandre Kanmegne - H26
+   */
+  openDeleteTeamsConfirmation = () => {
+    if (this.state.selectedRows.length === 0) {
+      ShowToast(
+        'Aucune équipe sélectionnée pour la suppression.',
+        5000,
+        'warning',
+        'top-center',
+        false,
+      );
+      return;
+    }
+    this.setState({ isConfirmDeleteTeamsOpen: true });
+  };
+
+  /**
+   * Supprime toutes les notes de toutes les équipes sélectionnées
+   * @author Léandre Kanmegne - H26
+   */
+  deleteSelectedTeamsResults = async () => {
+    this.setState({ isConfirmDeleteTeamsOpen: false });
+    const { selectedRows, results } = this.state;
+
+    try {
+      const promises: Promise<any>[] = [];
+      selectedRows.forEach((rowId) => {
+        const team = results.find((r) => r.id === rowId);
+        if (team) {
+          team.judgeScores.forEach((js) => {
+            promises.push(
+              ResultService.deletesJudgeScore(team.teams_name, js.judge_id),
+            );
+          });
+        }
+      });
+      await Promise.all(promises);
+
+      this.ShowSuccess(
+        'Les résultats des équipes sélectionnées ont été supprimés avec succès.',
+      );
+      this.setState({ selectedRows: [], results: [] });
+      await this.getInfos();
+      await this.fetchJudgeScoreExclusions();
+    } catch (error) {
+      this.ShowErrors('Une erreur est survenue lors de la suppression.');
+    }
+  };
 }
 
 export default EvaluationsResultsListPage;

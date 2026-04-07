@@ -1,3 +1,6 @@
+-- Insertion du time_slot manquant pour les evaluations
+INSERT INTO time_slots (time) VALUES ('18:00:00');
+
 -- Insertions dans 'users' pour les juges
 INSERT INTO users (first_name, last_name, email, role_id) VALUES
 ('Robert', 'De Niro', 'robert@example.com', (SELECT id FROM role WHERE name = 'Juge')),
@@ -8,9 +11,9 @@ INSERT INTO users (first_name, last_name, email, role_id) VALUES
 ('Johnny', 'Depp', 'johnny@example.com', (SELECT id FROM role WHERE name = 'Juge'));
 
 -- Insertions dans 'categories'
-INSERT INTO categories (name, activated, max_members, survey_id) VALUES 
-('Physique', 1, 5, 1), 
-('Chimie', 1, 5, 1);
+INSERT INTO categories (name, activated, max_members, survey_id, acronym) VALUES 
+('Physique', 1, 5, 1, 'PHY'), 
+('Chimie', 1, 5, 1, 'CHI');
 
 -- Insertions dans 'judge' avec UUID
 INSERT INTO judge (uuid, categories_id, users_id) VALUES 
@@ -50,15 +53,15 @@ INSERT INTO survey (name) VALUES
 INSERT INTO evaluation (judge_id, teams_id, comments, survey_id, heure, est_actif) VALUES 
 ((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'robert@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Alpha'), 'Projet très innovant', (SELECT id FROM survey WHERE name = 'Template_physique'), 1, 1),
 ((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'morgan@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Alpha'), 'Excellente démarche scientifique', (SELECT id FROM survey WHERE name = 'Template_physique'), 2, 1),
-((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'brad@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Alpha'), 'Approche théorique solide', (SELECT id FROM survey WHERE name = 'Template_physique'), 3, 1),
+((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'brad@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Alpha'), 'Approche théorique solide', (SELECT id FROM survey WHERE name = 'Template_physique'), 57, 1),
 
 ((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'robert@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Delta'), 'Bon usage des méthodes expérimentales', (SELECT id FROM survey WHERE name = 'Template_physique'), 1, 1),
 ((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'morgan@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Delta'), 'Travail remarquable sur les particules', (SELECT id FROM survey WHERE name = 'Template_physique'), 2, 1),
-((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'brad@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Delta'), 'Explications claires et précises', (SELECT id FROM survey WHERE name = 'Template_physique'), 3, 1),
+((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'brad@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Delta'), 'Explications claires et précises', (SELECT id FROM survey WHERE name = 'Template_physique'), 57, 1),
 
 ((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'robert@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Zeta'), 'Impressionnant travail de recherche', (SELECT id FROM survey WHERE name = 'Template_physique'), 1, 1),
 ((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'morgan@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Zeta'), 'Manque un peu de rigueur dans les tests', (SELECT id FROM survey WHERE name = 'Template_physique'), 2, 1),
-((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'brad@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Zeta'), 'Bonne compréhension du sujet', (SELECT id FROM survey WHERE name = 'Template_physique'), 3, 1);
+((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'brad@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Zeta'), 'Bonne compréhension du sujet', (SELECT id FROM survey WHERE name = 'Template_physique'), 57, 1);
 
 -- Insertions des évaluations pour la catégorie 'Chimie' par les juges Al et Tom et Johnny Depp --
 
@@ -70,15 +73,15 @@ INSERT INTO evaluation (judge_id, teams_id, comments, survey_id, heure, est_acti
 
 -- Évaluations pour l'Équipe Gamma
 INSERT INTO evaluation (judge_id, teams_id, comments, survey_id, heure, est_actif) VALUES 
-((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'al@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Gamma'), 'Résultats prometteurs', (SELECT id FROM survey WHERE name = 'Template_chimie'), 3, 1),
-((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'tom@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Gamma'), 'Bonne rigueur expérimentale', (SELECT id FROM survey WHERE name = 'Template_chimie'), 4, 1),
+((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'al@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Gamma'), 'Résultats prometteurs', (SELECT id FROM survey WHERE name = 'Template_chimie'), 57, 1),
+((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'tom@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Gamma'), 'Bonne rigueur expérimentale', (SELECT id FROM survey WHERE name = 'Template_chimie'), 58, 1),
 ((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'johnny@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Gamma'), 'Excellente compréhension théorique', (SELECT id FROM survey WHERE name = 'Template_chimie'), 2, 1);
 
 -- Évaluations pour l'Équipe Bêta
 INSERT INTO evaluation (judge_id, teams_id, comments, survey_id, heure, est_actif) VALUES 
-((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'al@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Bêta'), 'Approche originale', (SELECT id FROM survey WHERE name = 'Template_chimie'), 5, 1),
-((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'tom@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Bêta'), 'Très bonne maîtrise technique', (SELECT id FROM survey WHERE name = 'Template_chimie'), 6, 1),
-((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'johnny@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Bêta'), 'Bon travail, mais peut encore être approfondi', (SELECT id FROM survey WHERE name = 'Template_chimie'), 3, 1);
+((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'al@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Bêta'), 'Approche originale', (SELECT id FROM survey WHERE name = 'Template_chimie'), 60, 1),
+((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'tom@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Bêta'), 'Très bonne maîtrise technique', (SELECT id FROM survey WHERE name = 'Template_chimie'), 61, 1),
+((SELECT id FROM judge WHERE users_id = (SELECT id FROM users WHERE email = 'johnny@example.com')), (SELECT id FROM teams WHERE name = 'Équipe Bêta'), 'Bon travail, mais peut encore être approfondi', (SELECT id FROM survey WHERE name = 'Template_chimie'), 57, 1);
 
 -- Insertions dans 'rating_section'
 INSERT INTO rating_section (name, position, survey_id) VALUES 

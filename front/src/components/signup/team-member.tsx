@@ -1,14 +1,7 @@
 /**
  * Tristan Lafontaine
  */
-import React from 'react';
-import { ValidatorForm } from 'react-material-ui-form-validator';
-import TeamMember from '../../types/sign-up/team-member';
-import {
-  MAX_LENGTH_FIRST_NAME,
-  MAX_LENGTH_LAST_NAME,
-  REGEX,
-} from '../../utils/constants';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {
   Checkbox,
   FormControl,
@@ -21,12 +14,18 @@ import {
   RadioGroup,
   Tooltip,
 } from '@mui/material';
-import styles from './../../pages/ParticipantRegistration/ParticipantRegistrationPage.module.css';
-import { TextValidator } from 'react-material-ui-form-validator';
-import { INPUT_VARIANT } from '../../utils/muiConstants';
+import React from 'react';
+import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { TEXTS } from '../../lang/fr';
+import TeamMember from '../../types/sign-up/team-member';
+import {
+  MAX_LENGTH_FIRST_NAME,
+  MAX_LENGTH_LAST_NAME,
+  REGEX,
+} from '../../utils/constants';
+import { INPUT_VARIANT } from '../../utils/muiConstants';
 import { suffix } from '../../utils/utils';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import styles from './../../pages/ParticipantRegistration/ParticipantRegistrationPage.module.css';
 
 /**
  *  Composant membre de l'équipe

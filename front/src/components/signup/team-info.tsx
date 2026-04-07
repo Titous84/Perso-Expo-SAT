@@ -1,23 +1,23 @@
 /**
  * @author Tristan Lafontaine
  */
-import React from 'react';
-import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator'
-import { MAX_LENGTH_DESCRIPTION_STAND, MAX_LENGTH_TITLE_STAND } from '../../utils/constants';
-import { INPUT_VARIANT } from '../../utils/muiConstants';
-import { TEXTS } from '../../lang/fr';
 import { Grid2 } from '@mui/material';
-import Paper from '@mui/material/Paper';
-import TeamInfo from '../../types/sign-up/team-info';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormLabel from '@mui/material/FormLabel';
+import Paper from '@mui/material/Paper';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import React from 'react';
+import { SelectValidator, TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
+import { TEXTS } from '../../lang/fr';
+import Category from '../../types/sign-up/category';
+import TeamInfo from '../../types/sign-up/team-info';
+import { MAX_LENGTH_DESCRIPTION_STAND, MAX_LENGTH_TITLE_STAND } from '../../utils/constants';
+import { INPUT_VARIANT } from '../../utils/muiConstants';
 import { createRandomKey } from '../../utils/utils';
 import BasicPopover from '../help/PopOver';
-import Category from '../../types/sign-up/category';
 import styles from "./../../pages/ParticipantRegistration/ParticipantRegistrationPage.module.css";
 
 /**

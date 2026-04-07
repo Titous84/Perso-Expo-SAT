@@ -217,4 +217,42 @@ class EvaluationGridRepository extends Repository
             return false;
         }
     }
+
+    /**
+     * Vérifie si une grille d'évaluation est assignée à des catégories
+     * @param int $id L'ID de la grille
+     * @return array Les catégories utilisant cette grille
+     * @author Léandre Kanmegne - H26
+     */
+    public function getEvaluationsBySurveyId(int $id): array
+    {
+        try {
+            $sql = "SELECT id FROM evaluation WHERE survey_id = :id";
+            $req = $this->db->prepare($sql);
+            $req->execute(["id" => $id]);
+            return $req->fetchAll();
+        } catch (PDOException $e) {
+            $this->logHandler->error($e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Vérifie si une grille d'évaluation est assignée à des catégories
+     * @param int $id L'ID de la grille
+     * @return array Les catégories utilisant cette grille
+     * @author Léandre Kanmegne - H26
+     */
+    public function getCategoriesBySurveyId(int $id): array
+    {
+        try {
+            $sql = "SELECT id, name FROM categories WHERE survey_id = :id";
+            $req = $this->db->prepare($sql);
+            $req->execute(["id" => $id]);
+            return $req->fetchAll();
+        } catch (PDOException $e) {
+            $this->logHandler->error($e->getMessage());
+            return [];
+        }
+    }
 }

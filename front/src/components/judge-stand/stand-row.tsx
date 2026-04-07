@@ -1,9 +1,9 @@
-import React from 'react';
-import JugeInfo from '../../types/juge-stand/jugeInfo';
-import StandInfo from '../../types/juge-stand/standInfo';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import React from 'react';
 import IAssignation from '../../types/juge-stand/IAssignation';
+import JugeInfo from '../../types/juge-stand/jugeInfo';
+import StandInfo from '../../types/juge-stand/standInfo';
 import LineSelect from './line-select';
 
 interface StandRowProps

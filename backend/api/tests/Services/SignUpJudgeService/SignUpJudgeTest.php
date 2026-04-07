@@ -23,6 +23,8 @@ use \App\Validators\ValidatorUserRole;
 
 /**
  * Classe permettant de tester la création d'un juge.
+ * Bugfix : Ajout des parametres manquants
+ * @author Léandre Kanmegne - H26
  */
 final class SignUpJudgeTest extends TestCase
 {
@@ -51,8 +53,8 @@ final class SignUpJudgeTest extends TestCase
             new ValidatorUser(),
             new ValidatorAdministrator(),
             new ValidatorJudge(),
-            new EmailService(new PHPMailer),
-            new TwigService(),
+            new EmailService(new PHPMailer(), new LogHandler()),
+            new TwigService(new LogHandler()),
             new VerificationCodeService(
                 new VerificationCodeRepository($this->pdo->PDO(), $logHandler),
                 $logHandler,

@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import EvaluationsResultsListPage from './EvaluationsResultsListPage';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as ResultServiceModule from '../../api/result/resultService';
 import ResultInfo from '../../types/results/resultInfo';
+import EvaluationsResultsListPage from './EvaluationsResultsListPage';
 
 /**
  * Tests unitaires pour le composant ResultsList qui affiche les résultats des évaluations. 
@@ -107,4 +107,4 @@ describe('ResultsList', () => {
 
 });
 
-export {};
+export { };

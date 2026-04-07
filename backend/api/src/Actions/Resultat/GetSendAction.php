@@ -2,9 +2,7 @@
 
 namespace App\Actions\Resultat;
 
-use App\Services\ResultatSendService;
 use Psr\Http\Message\ResponseInterface;
-use App\Enums\EnumHttpCode;
 use App\Fabricators\Emails\EmailSendResultFabricator;
 use App\Services\EmailService;
 use App\Services\TwigService;

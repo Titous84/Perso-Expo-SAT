@@ -15,8 +15,8 @@ class StandRepository extends Repository
 	 * Fonction qui permet d'ajouter un evaluation
 	 * @param $time heure de l'evaluation
      * @param $stand Numero du stand evaluer
-     * @param @judgeId id du juge
-	 * @param @surveyId id du survey
+     * @param $judgeId id du juge
+	 * @param $surveyId id du survey
 	 * @return int Retourne le nombre de lignes ajouté.
 	 *@throws PDOException Peut lancer des erreurs PDOException.
 	 */
@@ -44,15 +44,15 @@ class StandRepository extends Repository
 		}catch(PDOException $e){
 			$context["http_error_code"] = $e->getCode();
 			$this->logHandler->critical($e->getMessage(), $context);
-			return array();
+			return 0;
 		}
     }
 
     /**
 	 * Fonction qui permet de verifier un stand
      * @param $stand Numero du stand evaluer
-     * @param @judgeFirstName prenom du juge
-     * @param @judgeLastName nom du juge
+     * @param $judgeFirstName prenom du juge
+     * @param $judgeLastName nom du juge
 	 * @return int Retourne le nombre de lignes ajouté.
 	 *@throws PDOException Peut lancer des erreurs PDOException.
 	 */
@@ -72,7 +72,7 @@ class StandRepository extends Repository
 	}catch(PDOException $e){
 		$context["http_error_code"] = $e->getCode();
 		$this->logHandler->critical($e->getMessage(), $context);
-		return array();
+		return 0;
 	}
     }
 }

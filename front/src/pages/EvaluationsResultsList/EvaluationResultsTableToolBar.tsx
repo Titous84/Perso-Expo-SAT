@@ -8,11 +8,12 @@ import ResultInfo from '../../types/results/resultInfo';
  * @property {() => void} deleteSelectedTeams - Méthode passée par le parent qui supprime les résultat sélectionnées dans le tableau.
  */
 interface EvaluationResultsToolbarProps {
-    sendInfo: (result: ResultInfo | undefined) => void;
-    deleteJudgeScores: () => void;
-    selectedRows: number[];
-    selectedJudgeScores: { teamName: string, judgeId: number }[];
-    results: ResultInfo[];
+  sendInfo: (result: ResultInfo | undefined) => void;
+  deleteJudgeScores: () => void;
+  deleteSelectedTeamsResults: () => void;
+  selectedRows: number[];
+  selectedJudgeScores: { teamName: string; judgeId: number }[];
+  results: ResultInfo[];
 }
 
 /**
@@ -22,7 +23,7 @@ interface EvaluationResultsToolbarProps {
  * 
  * @author Antoine Ouellette, Tommy Garneau
  */
-export default function EvaluationResultsToolbar({ sendInfo, deleteJudgeScores, selectedRows, selectedJudgeScores, results }: EvaluationResultsToolbarProps) {
+export default function EvaluationResultsToolbar({ sendInfo, deleteJudgeScores, deleteSelectedTeamsResults, selectedRows, selectedJudgeScores, results }: EvaluationResultsToolbarProps) {
     return (
         <GridToolbarContainer>
             <Stack direction="row" spacing={2} justifyContent="space-between" width="100%">
@@ -66,12 +67,12 @@ export default function EvaluationResultsToolbar({ sendInfo, deleteJudgeScores, 
                         Envoyer résultats
                     </Button>
 
-                    {/* Bouton Supprimer les résultats sélectionnées */}
+                    {/* Bouton Supprimer les résultats des equipes sélectionnées */}
                     <Tooltip title="Supprimer">
                         <span>
                         <IconButton
-                            onClick={deleteJudgeScores} // Appelle la méthode pour supprimer les résultats sélectionnés
-                            disabled={selectedJudgeScores.length === 0} // Désactiver si aucune note n'est sélectionnée
+                            onClick={deleteSelectedTeamsResults} // Appelle la méthode pour supprimer les résultats des équipes sélectionnées
+                            disabled={selectedRows.length === 0} // Désactiver si aucune équipe n'est sélectionnée
                         >
                             <DeleteIcon fontSize="small" color="error" />
                         </IconButton>

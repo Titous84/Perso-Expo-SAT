@@ -38,12 +38,14 @@ class JudgeStandRepository extends Repository
      * Fonction pour selectionner l'ensemble des juges.
      * @return array un tableau  des juges
     */
-    public function selectJudge() : array
+   public function selectJudge() : array
     {
-
-        $sql = "SELECT judge.id, categories_id, CONCAT(users.first_name, ' ', users.last_name) AS nom_complet, categories.survey_id from judge 
-        INNER JOIN users ON users.id = judge.users_id INNER JOIN categories ON categories.id = categories_id
-        WHERE users.blacklisted = 0;";
+        // Bugfix : Filtrer les juges inactifs du scheduler et de l'envoi d'évaluations
+        // @author Léandre Kanmegne - H26
+        $sql = "SELECT judge.id, categories_id, CONCAT(users.first_name, ' ', users.last_name) AS nom_complet, categories.survey_id FROM judge
+        INNER JOIN users ON users.id = judge.users_id 
+        INNER JOIN categories ON categories.id = categories_id
+        WHERE users.blacklisted = 0 AND users.activated = 1;";
 
         $query = $this->connection->prepare($sql);
         $query->execute();

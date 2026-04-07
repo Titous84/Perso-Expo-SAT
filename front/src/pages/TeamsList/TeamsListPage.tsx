@@ -1,8 +1,8 @@
 import { Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-import IPage from "../../types/IPage";
-import { TEXTS } from '../../lang/fr';
 import AllTeamsMembersTable from '../../components/TeamsListPage/AllTeamsMembersTable/AllTeamsMembersTable';
 import TeamsTable from '../../components/TeamsListPage/TeamsTables/TeamsTable';
+import { TEXTS } from '../../lang/fr';
+import IPage from "../../types/IPage";
 
 /**
  * Variables d'état du composant React: TeamsListPage.

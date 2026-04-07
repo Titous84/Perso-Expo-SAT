@@ -1,17 +1,17 @@
 /**
  * Jean-Philippe Bourassa, basé sur le travail de Tristan Lafontaine
  */
- import React from 'react';
- import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
- import Judge from '../../types/judge';
- import { MAX_LENGTH_PWD } from '../../utils/constants';
- import { FormControl,FormControlLabel, FormLabel, Grid2, InputLabel, MenuItem, Paper, Radio, RadioGroup } from '@mui/material';
- import styles from "./../../pages/ParticipantRegistration/ParticipantRegistrationPage.module.css";
- import { INPUT_VARIANT } from '../../utils/muiConstants';
- import { TEXTS } from '../../lang/fr';
- import { createRandomKey } from '../../utils/utils';
- import BasicPopover from '../help/PopOver';
- import Category from '../../types/sign-up/category';
+ import { FormControl, FormControlLabel, FormLabel, Grid2, InputLabel, MenuItem, Paper, Radio, RadioGroup } from '@mui/material';
+import React from 'react';
+import { SelectValidator, TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
+import { TEXTS } from '../../lang/fr';
+import Judge from '../../types/judge';
+import Category from '../../types/sign-up/category';
+import { MAX_LENGTH_PWD } from '../../utils/constants';
+import { INPUT_VARIANT } from '../../utils/muiConstants';
+import { createRandomKey } from '../../utils/utils';
+import BasicPopover from '../help/PopOver';
+import styles from "./../../pages/ParticipantRegistration/ParticipantRegistrationPage.module.css";
  
  /**
   *  Composant vérification des juges

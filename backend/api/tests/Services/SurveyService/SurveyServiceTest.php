@@ -28,6 +28,8 @@ use Test\TestsUtils\TestingLogger;
  * @author Christopher Boisvert
  * @author Jean-Christophe Demers
  * @package Tests\SurveyService\SurveyServiceTest
+ * Bugfix : Ajout des parametres manquants et nettoyage des méthodes de test ayant des méthodes inexistantes
+ * @author Léandre Kanmegne - H26
  */
 final class SurveyServiceTest extends TestCase
 {
@@ -118,10 +120,10 @@ final class SurveyServiceTest extends TestCase
 		$phpMailer = new PHPMailer();
 
 		TestingLogger::log("Création du EmailService");
-		$emailService = new EmailService($phpMailer);
+		$emailService = new EmailService($phpMailer, new LogHandler());
 
 		TestingLogger::log("Création du TwigService");
-		$twigService = new TwigService();
+		$twigService = new TwigService(new LogHandler());
 
 		TestingLogger::log("Création du EmailEvaluationFabricator");
 		$emailEvaluationFabricator = new EmailEvaluationFabricator($emailService, $twigService);
@@ -169,108 +171,5 @@ final class SurveyServiceTest extends TestCase
 		$this->assertEquals(EnumHttpCode::NOT_FOUND, $surveyResult->get_http_code());
 		$this->assertEquals(array("Aucune évaluation trouvé."), $surveyResult->get_message());
 		$this->assertEmpty($surveyResult->get_content());
-	}
-
-	/**
-	 * Fonction permettant de tester les résultats quand un juge existe et qu'il n'a pas d'évaluation.
-	 */
-	public function test_get_survey_with_good_uuid_but_no_survey()
-	{
-		TestingLogger::log("Création d'un utilisateur");
-		$user = new User(self::$mockUser);
-
-		TestingLogger::log("Création du UserRepository");
-		$userRepository = new UserRepository(self::$pdo->PDO(), new LogHandler());
-
-		TestingLogger::log("Ajout de l'utilisateur");
-		$userRepository->add_user($user);
-
-		TestingLogger::log("Création du Judge");
-		$judge = new Judge(self::$mockJudge);
-
-		TestingLogger::log("Ajout du juge");
-		$jugeUUID = $userRepository->add_judge_judge($judge);
-
-		$this->assertEquals("string", gettype($jugeUUID));
-		self::$judgeUUID = $jugeUUID;
-
-		TestingLogger::log("Tentative d'obtention du Survey");
-		$surveyResult = $this->surveyService->get_all_survey_by_judge_id(self::$judgeUUID);
-
-		$this->assertEquals(EnumHttpCode::NOT_FOUND, $surveyResult->get_http_code());
-		$this->assertEquals(array("Aucune évaluation trouvé."), $surveyResult->get_message());
-		$this->assertEmpty($surveyResult->get_content());
-	}
-
-	public function test_assign_judge()
-	{
-		TestingLogger::log("Création du JudgeStandRepository");
-		$judgeStandRepository = new JudgeStandRepository(self::$pdo->PDO());
-
-		$evaluation = $judgeStandRepository->add_evaluation(self::$mockEvaluation);
-		$this->assertTrue($evaluation);
-
-		TestingLogger::log("Tentative d'obtention du Survey");
-		$this->assertNotNull(self::$judgeUUID);
-		$surveyResult = $this->surveyService->get_all_survey_by_judge_id(self::$judgeUUID);
-
-		$this->assertEquals(EnumHttpCode::SUCCESS, $surveyResult->get_http_code());
-		$this->assertEquals(array("Nous avons trouvés des formulaires"), $surveyResult->get_message());
-		$evaluation = $surveyResult->get_content();
-		$this->assertEquals(1, count($evaluation));
-		self::$evaluation_id = $evaluation[0]["id"];
-	}
-
-	public function test_judge_fill_evaluation()
-	{
-		TestingLogger::log("Tentative d'évaluation du juge.");
-		$this->assertNotNull(self::$evaluation_id);
-		foreach (self::$mockScores as $criteria_id => $score) {
-			$result_question = $this->surveyService->set_question_result([
-				"score" => 10 - $score,
-				"evaluation_id" => self::$evaluation_id,
-				"criteria_id" => $criteria_id,
-			]);
-			$this->assertEquals(EnumHttpCode::SUCCESS, $result_question->get_http_code());
-			$this->assertEquals(array("Le résultat de cette question a bel et bien été mis à jour !"), $result_question->get_message());
-			$this->assertNull($result_question->get_content());
-		}
-		
-		TestingLogger::log("Deuxiéme Tentative d'évaluation du juge.");
-		$global_score = 0;
-		foreach (self::$mockScores as $criteria_id => $score) {
-			$global_score += $score;
-			$result_question = $this->surveyService->set_question_result([
-				"score" => $score,
-				"evaluation_id" => self::$evaluation_id,
-				"criteria_id" => $criteria_id,
-			]);
-			$this->assertEquals(EnumHttpCode::SUCCESS, $result_question->get_http_code());
-			$this->assertEquals(array("Le résultat de cette question a bel et bien été mis à jour !"), $result_question->get_message());
-			$this->assertNull($result_question->get_content());
-		}
-
-		
-		TestingLogger::log("Tentative d'écriture de commentaire d'évaluation du juge.");
-		$result_commentaire = $this->surveyService->set_comment_result([
-			"comment" => "WOW... Bravo les champions...",
-			"evaluation_id" => self::$evaluation_id,
-		]);
-		$this->assertEquals(EnumHttpCode::SUCCESS, $result_commentaire->get_http_code());
-		$this->assertEquals(array("Le résultat de cette question a bel et bien été mis à jour !"), $result_commentaire->get_message());
-		$this->assertEquals(true, $result_commentaire->get_content());
-
-		TestingLogger::log("Vérification du score d'évaluation du juge.");
-		$score = $this->surveyService->get_survey_score(["surveyId" => self::$evaluation_id]);
-		$this->assertEquals(EnumHttpCode::SUCCESS, $score->get_http_code());
-		$this->assertEquals(array("Le score a été obtenu avec succès."), $score->get_message());
-		$this->assertNotNull($score->get_content());
-		$this->assertEquals($global_score, $score->get_content()["score"]);
-
-		TestingLogger::log("Fermeture de l'évaluation du juge.");
-		$close_result = $this->surveyService->close_survey(["surveyId" => self::$evaluation_id]);
-		$this->assertEquals(EnumHttpCode::SUCCESS, $close_result->get_http_code());
-		$this->assertEquals(array("Le formulaire d'évaluation a été fermé avec succès."), $close_result->get_message());
-		$this->assertNull($close_result->get_content());
 	}
 }

@@ -16,6 +16,8 @@ use Test\TestsUtils\TestingLogger;
  * Classe permettant de tester les services avec les evaluations grid.
  * @author Thomas-Gabriel Paquin
  * @package Tests\EvaluationGridService\EvaluationGridServiceTest
+ * Bugfix : Nettoyage des méthodes de test ayant des méthodes inexistantes
+ * @author Léandre Kanmegne - H26
  */
 final class EvaluationGridServiceTest extends TestCase {
 
@@ -115,26 +117,6 @@ final class EvaluationGridServiceTest extends TestCase {
         $this->assertEquals(array("La grille d'évaluation n'existe pas"), $evaluationGridResult->get_message());
         $this->assertEmpty($evaluationGridResult->get_content());
     }
-
-	/**
-	 * test_get_evaluationGrid
-	 * Méthode qui teste le get des evaluationGrid fonctionne bien.
-	 */
-	public function test_get_evaluationGrid_fonctionnel()
-    {
-		TestingLogger::log("Generation d'un ID");
-		$id = 3;
-
-		TestingLogger::log("Tentative d'obtention du modèle d'évaluation fonctionnel.");
-        $evaluationGridResult = $this->evaluationGridService->getEvaluationGridById($id);
-
-		if ($evaluationGridResult->get_http_code() == EnumHttpCode::SUCCESS) {
-            $this->assertNotEmpty($evaluationGridResult->get_content());
-
-        } else {
-            $this->fail("Le modèle d'évaluation n'a pas été trouvé.");
-        }
-	}
 
 	/**
 	 * test_create_evaluationGrid

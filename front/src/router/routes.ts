@@ -2,17 +2,17 @@ import AdministrationMainPage from "../pages/AdministrationMain/AdministrationMa
 import CreateJudgeSuccessful from "../pages/CreateJudgeSuccessful/createJudgeSuccessful";
 import DevelopersListPage from "../pages/DevelopersList/DevelopersListPage";
 import EmailEvaluationJudgeIndividually from "../pages/EmailEvaluationJudges/emailEvaluationJudgeIndividually";
-import EmailValidationJudgePageContent from "../pages/EmailValidationJudge/EmailValidationJudgePage";
+import JudgesEmailsSendingPage from "../pages/EmailEvaluationJudges/JudgesEmailsSendingPage";
 import { EmailValidationPage } from "../pages/EmailValidation/EmailValidationPage";
+import EmailValidationJudgePageContent from "../pages/EmailValidationJudge/EmailValidationJudgePage";
 import EvaluationGridCreationPage from "../pages/EvaluationGridsList/EvaluationGridCreationPage";
 import FeatureUnavailablePage from "../pages/FeatureUnavailable/FeatureUnavailablePage";
-import ForgottenPasswordModificationPage from "../pages/ForgottenPasswordModification/ForgottenPasswordModificationPage"
 import ForgottenPasswordPage from "../pages/ForgottenPassword/ForgottenPasswordPage";
+import ForgottenPasswordModificationPage from "../pages/ForgottenPasswordModification/ForgottenPasswordModificationPage";
 import HomePage from "../pages/Home/HomePage";
 import InformationsPage from "../pages/Informations/InformationsPage";
-import JudgeCreationPage from "../pages/JudgeCreation/JudgeCreationPage"
+import JudgeCreationPage from "../pages/JudgeCreation/JudgeCreationPage";
 import JudgeEvaluationsListPage from "../pages/JudgeEvaluationsList/JudgeEvaluationsListPage";
-import JudgesEmailsSendingPage from "../pages/EmailEvaluationJudges/JudgesEmailsSendingPage";
 import LoginPage from "../pages/Login/LoginPage";
 import LogOutPage from "../pages/LogOut/LogOutPage";
 import ParticipantRegistrationPage from "../pages/ParticipantRegistration/ParticipantRegistrationPage";

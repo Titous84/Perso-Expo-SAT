@@ -11,6 +11,8 @@ use App\Enums\EnumHttpCode;
 /** 
  * Classe permettant d'envoyer un courriel contenant les résultats
  * @namespace App\Fabricators\Emails
+ * Bugfix @author Léandre Kanmegne H-26
+ * Correction de la déclaration de la variable $repository pour spécifier le type SendRepository, et
 */
 class EmailSendResultFabricator
 {
@@ -18,6 +20,7 @@ class EmailSendResultFabricator
      * @var EmailService $emailService Service permettant d'envoyer des courriels.
      */
     private $emailService;
+    private $logHandler;
 
     /**
      * @var TwigService $twigService Service permettant d'obtenir le code html d'un courriel.
@@ -59,7 +62,7 @@ class EmailSendResultFabricator
 				"receiver_last_name" => "",
 				"subject"=> "ExpoSAT - Envoie de notes",
 				//TODO: Obligatoire
-				"text_content"=> null,
+				"text_content"=> "",
 				"html_content" => $html
 			];
 			$mail = new Email($emailJSON);
@@ -67,8 +70,6 @@ class EmailSendResultFabricator
 		}
 		catch(Exception $e)
 		{
-			$context["http_error_code"] = $e->getCode();
-            $this->logHandler->critical($e->getMessage(), $context);
 			return new Result(EnumHttpCode::SERVER_ERROR, array("La maquette Twig n'a pas pu être chargé."));
 		}
     }

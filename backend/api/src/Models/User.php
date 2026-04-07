@@ -6,6 +6,8 @@ namespace App\Models;
  * Classe User.
  * @author Christopher Boisvert
  * @package App\Models
+ * Bugfix : Application des bonnes pratiques de codage
+ * @author Léandre Kanmegne - H26
  */
 class User
 {
@@ -27,7 +29,7 @@ class User
 	/**
 	 * @var string Nom utilisateur de l'utilisateur.
 	 */
-	public string $username;
+	public ?string $username;
 
 	/**
 	 * @var string|null Mot de passe de l'utilisateur.
@@ -42,27 +44,27 @@ class User
 	/**
 	 * @var string Numéro de DA de l'utilisateur.
 	 */
-	public string $numero_da;
+	public ?string $numero_da;
 
 	/**
 	 * @var string URL vers l'image de l'utilisateur.
 	 */
-	public string $picture;
+	public ?string $picture;
 
 	/**
 	 * @var string Consentement de l'utilisateur à afficher sa photo.
 	 */
-	public string $picture_consent;
+	public ?string $picture_consent;
 
 	/**
 	 * @var string Token qui permet de changer son mot de passe.
 	 */
-	public string $reset_token;
+	public ?string $reset_token;
 
 	/**
 	 * @var string Token qui permet d'activer l'utilisateur.
 	 */
-	public string $activation_token;
+	public ?string $activation_token;
 
 	/**
 	 * @var int|null Statut d'activation de l'utilisateur.

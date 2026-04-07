@@ -1,7 +1,7 @@
 import React from 'react';
+import { ActualRole } from '../../utils/roleUtil';
+import { removeToken } from "../../utils/tokenUtil";
 import styles from "./LogOutPage.module.css";
-import {removeToken} from "../../utils/tokenUtil"
-import { ActualRole } from '../../utils/roleUtil'
 
 /**
  * Page de déconnexion

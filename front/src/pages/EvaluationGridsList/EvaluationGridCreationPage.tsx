@@ -1,16 +1,16 @@
-import React from 'react';
-import { Navigate, useParams } from "react-router";
-import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator'
 import { CircularProgress, Grid2 } from "@mui/material";
+import React from 'react';
+import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
+import { Navigate, useParams } from "react-router";
+import EvaluationGridService from "../../api/evaluationGrid/evaluationGridService";
 import AlertComposant from "../../components/alert/alert";
 import ButtonExposat from '../../components/button/button-exposat';
-import Category from "../../types/sign-up/category";
 import EvaluationGridFormSection from "../../components/evaluationGrid/evaluationGridFormSection";
 import Layout from '../../components/layout/layout';
-import { IEvaluationGrid } from "../../types/evaluationGrid/IEvaluationGrid";
-import EvaluationGridService from "../../api/evaluationGrid/evaluationGridService";
-import { INPUT_VARIANT } from "../../utils/muiConstants";
 import { TEXTS } from '../../lang/fr';
+import { IEvaluationGrid } from "../../types/evaluationGrid/IEvaluationGrid";
+import Category from "../../types/sign-up/category";
+import { INPUT_VARIANT } from "../../utils/muiConstants";
 
 /**
  * Page de création d'un modèle de grille d'évaluation.

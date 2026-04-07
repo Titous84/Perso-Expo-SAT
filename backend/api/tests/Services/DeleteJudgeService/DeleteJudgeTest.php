@@ -26,6 +26,8 @@ use function PHPUnit\Framework\assertTrue;
 
 /**
  * Classe permettant de tester la suppression d'un juge.
+ * Bugfix : Ajout des parametres manquants
+ * @author Léandre Kanmegne - H26
  */
 final class DeleteJudgeTest extends TestCase
 {
@@ -55,8 +57,8 @@ final class DeleteJudgeTest extends TestCase
             new ValidatorUser(),
             new ValidatorAdministrator(),
             new ValidatorJudge(),
-            new EmailService(new PHPMailer),
-            new TwigService(),
+            new EmailService(new PHPMailer(), new LogHandler()),
+            new TwigService(new LogHandler()),
             new VerificationCodeService(
                 new VerificationCodeRepository($this->pdo->PDO(), $logHandler),
                 $logHandler,
@@ -112,7 +114,7 @@ final class DeleteJudgeTest extends TestCase
         $userIDInexistant = 99999; 
         
         $response = $this->userService->delete_judge($userIDInexistant);
-        $this->assertSame(array("le juge dont l'id est " . $userIDInexistant . " n'a pas été bel et bien été supprimé"), $response->get_message());
+        $this->assertSame(array("le juge dont l'id est " . $userIDInexistant . " n'a pas été supprimé"), $response->get_message());
         $_ENV["production"] = "true";
     }
     /**

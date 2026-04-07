@@ -1,12 +1,12 @@
 import { Button } from "@mui/material";
-import { useState } from 'react';
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import AdministratorCreationDialog from "../AdministratorCreationDialog/AdministratorCreationDialog";
-import AdministratorsTableToolbar from "./AdministratorsTableToolbar";
+import { useState } from 'react';
 import ConfirmationDialog from "../../ConfirmationDialog/ConfirmationDialog";
 import TemporarySnackbar from "../../TemporarySnackbar/TemporarySnackbar";
-import useAdministratorsTableHook from "./AdministratorsTableHook";
+import AdministratorCreationDialog from "../AdministratorCreationDialog/AdministratorCreationDialog";
 import AdministratorPasswordDialog from '../AdministratorCreationDialog/AdministratorPasswordDialog';
+import useAdministratorsTableHook from "./AdministratorsTableHook";
+import AdministratorsTableToolbar from "./AdministratorsTableToolbar";
 
 /**
  * Tableau qui affiche la liste des administrateurs.
@@ -16,13 +16,9 @@ export default function AdministratorsTable() {
     // *** Variables d'état ***
     const {
         administratorsList,
-        setAdministratorsList,
-        selectedAdministratorsIds,
         setSelectedAdministratorsIds,
         isTableLoading,
-        setIsTableLoading,
         isDeleteLoading,
-        setIsDeleteLoading,
         isSnackbarOpen,
         setIsSnackbarOpen,
         snackbarMessage,

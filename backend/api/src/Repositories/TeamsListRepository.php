@@ -14,6 +14,9 @@ use PDOException;
  */
 class TeamsListRepository extends Repository
 {
+
+    private array $errorMessages = [];
+
     /**
      * Fonction qui permet d'obtenir tous les membres et les équipes
      * @param  string $role_name
@@ -239,6 +242,25 @@ class TeamsListRepository extends Repository
     }
 
     /**
+     * Vérifie si des équipes sont associées à une catégorie
+     * @param int $id L'ID de la catégorie
+     * @return array Les équipes associées
+     * @author Léandre Kanmegne - H26
+     */
+    public function get_teams_by_category_id(int $id): array
+    {
+        try {
+            $sql = "SELECT id, name FROM teams WHERE categories_id = :id";
+            $req = $this->db->prepare($sql);
+            $req->execute(["id" => $id]);
+            return $req->fetchAll();
+        } catch (PDOException $e) {
+            $this->logHandler->critical($e->getMessage());
+            return [];
+        }
+    }
+
+    /**
     * Fonction qui permet d'ajouter une nouvelle catégorie
     * @param string $name Le nom de la catégorie
     * @param string $acronym L'acronyme de la catégorie
@@ -294,6 +316,15 @@ class TeamsListRepository extends Repository
                 "acronym" => $acronym,
                 "survey_id" => $survey_id,
                 "activated" => $activated
+            ]);
+
+            // Bugfix : Propage le survey_id aux équipes de cette catégorie
+            // @author Léandre Kanmegne - H26
+            $sqlTeams = "UPDATE teams SET survey_id = :survey_id WHERE categories_id = :id";
+            $reqTeams = $this->db->prepare($sqlTeams);
+            $reqTeams->execute([
+                "survey_id" => $survey_id,
+                "id" => $id
             ]);
 
             return $req->rowCount() > 0 ? [] : ['error' => 'Échec de la mise à jour : aucune modification détectée ou catégorie non trouvée.'];

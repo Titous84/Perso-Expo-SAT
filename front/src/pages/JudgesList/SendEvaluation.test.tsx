@@ -1,8 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import NavigateButton from './JudgesListPage';
-import Judge from '../../types/judge';
+import { fireEvent, screen } from '@testing-library/react';
 import { useNavigate } from 'react-router';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import Judge from '../../types/judge';
 
 /**
  * Tests unitaires pour le bouton d'envoi des évaluations par courriel.

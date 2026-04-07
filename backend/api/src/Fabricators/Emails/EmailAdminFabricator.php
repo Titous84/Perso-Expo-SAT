@@ -4,9 +4,6 @@ namespace App\Fabricators\Emails;
 use App\Services\EmailService;
 use App\Services\TwigService;
 use App\Models\Email;
-use Exception;
-use App\Models\Result;
-use App\Enums\EnumHttpCode;
 
 /** 
  * Classe permettant d'envoyer un courriel suite à l'ajout d'un admin

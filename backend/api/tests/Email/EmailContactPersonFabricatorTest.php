@@ -2,6 +2,7 @@
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPUnit\Framework\TestCase;
+use App\Handlers\LogHandler;
 use App\Services\EmailService;
 use App\Services\TwigService;
 use Test\TestsUtils\TeamInitialize;
@@ -10,6 +11,8 @@ use Symfony\Component\Dotenv\Dotenv;
 /**
  * EmailContactPersonFabricatorTest
  * @author Tristan Lafontaine
+ * Bugfix : Ajout de LogHandler en parametre
+ * @author Léandre Kanmegne - H26
  */
 class EmailContactPersonFabricatorTest extends TestCase{
     
@@ -33,10 +36,10 @@ class EmailContactPersonFabricatorTest extends TestCase{
 		$phpMailer = new PHPMailer(true);
 
 		echo date("Y-m-d h:m:s") . " Création du service de courriel\n";
-		$emailService = new EmailService($phpMailer);
+		$emailService = new EmailService($phpMailer, new LogHandler());
 
 		echo date("Y-m-d h:m:s") . " Création du service Twig\n";
-		$twig = new TwigService();
+		$twig = new TwigService(new LogHandler());
 
 		echo date("Y-m-d h:m:s") . " Création EmailContactPersonFabricator\n";
 		$sendEmail = new EmailContactPersonFabricator($emailService, $twig);

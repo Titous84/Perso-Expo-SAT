@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -10,16 +9,17 @@ import {
   TextField,
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { useEffect, useState } from 'react';
 import CategoryService from '../../../api/categories/CategoriesService';
 import EvaluationGridService from '../../../api/evaluationGrid/evaluationGridService';
+import { ICategories } from '../../../types/TeamsList/ICategories';
+import { IEvaluationGrid } from '../../../types/evaluationGrid/IEvaluationGrid';
 import CategoriesTableToolbar from '../../CategoriesListPage/CategoriesTableToolbar';
+import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
+import { validateCategoriesInfos } from '../../TeamsListPage/Validations/ValidationCategories';
 import TemporarySnackbar, {
   SnackbarMessageType,
 } from '../../TemporarySnackbar/TemporarySnackbar';
-import { validateCategoriesInfos } from '../../TeamsListPage/Validations/ValidationCategories';
-import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
-import { ICategories } from '../../../types/TeamsList/ICategories';
-import { IEvaluationGrid } from '../../../types/evaluationGrid/IEvaluationGrid';
 
 export interface ICategorie {
   id: number;
@@ -207,10 +207,14 @@ export default function CategoriesTable() {
             setIsConfirmationDialogOpen(false);
           });
         } else {
-          setSnackbarMessage('Erreur lors de la suppression des catégories.');
+          // Bugfix : Correction du message d'Erreur afficher dans le snackbar en cas d'erreur lors de la suppression des catégories avec des dépendances (équipes associées) - Affiche le message d'erreur retourné par l'API.
+          // @author Léandre Kanmegne - H26
+          const message = Array.isArray(response.error)
+            ? response.error[0]
+            : response.error;
+          setSnackbarMessage(message);
           setSnackbarMessageType('error');
           setIsSnackbarOpen(true);
-          throw new Error(response.error);
         }
       })
       .catch((error) => {

@@ -8,6 +8,7 @@ use Slim\Psr7\Response;
 use App\Services\TeamsListService;
 use App\Utils\TokenUtils;
 use App\Services\TokenService;
+use Exception;
 
 /**
  * Classe permettant de gérer la page par défaut.

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 use App\Enums\EnumHttpCode;
-use App\Models\Credential;
 use App\Models\Result;
 use App\Repositories\StandRepository_ss;
 

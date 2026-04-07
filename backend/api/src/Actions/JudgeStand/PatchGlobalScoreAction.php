@@ -5,8 +5,6 @@ namespace App\Actions\JudgeStand;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use App\Services\JudgeStandService;
-use Slim\Psr7\Request;
-use Slim\Psr7\Response;
 
 /**
  * Classe pour mettre à jour la valeur du champs de l'exclusion de la note globale d'un juge (global_score_removed) pour une évaluation donnée.

@@ -419,10 +419,44 @@ class TeamsListService
      * @author Breno Gomes - H26
      * Corrections apportées par l'IA
      */
-    public function delete_categories(array $category): Result
+   public function delete_categories(array $category): Result
     {
         try {
-            $errors = $this->teamsListRepository->delete_categories($category['categories']);
+            $categoriesToDelete = $category['categories'];
+            
+            // Bugfix : Vérifie les dépendances avant de supprimer
+            // Si une catégorie est utilisée par une équipe, elle ne peut pas être supprimée
+            // delete_categorie appelé de la classe TeamsListRepository essaie de tout supprimer en cascade mais crash silencieusement sur les FK
+            // @author Léandre Kanmegne - H26
+            // Code partiellement généré par Chatgpt version 5.4 mars 2026
+            $blocked = [];
+            foreach ($categoriesToDelete as $id) {
+                $cat = $this->teamsListRepository->get_category_by_id((int)$id);
+                if (empty($cat)) continue;
+                
+                $catName = $cat[0]['name'];
+                $reasons = [];
+                
+                // Vérifie si des équipes utilisent cette catégorie
+                $teams = $this->teamsListRepository->get_teams_by_category_id((int)$id);
+                if (!empty($teams)) {
+                    $reasons[] = count($teams) . " équipe(s)";
+                }
+                
+                if (!empty($reasons)) {
+                    $blocked[] = $catName . " (" . implode(', ', $reasons) . ")";
+                }
+            }
+            
+            if (!empty($blocked)) {
+                return new Result(
+                    EnumHttpCode::BAD_REQUEST,
+                    array("Impossible de supprimer : les catégories suivantes ont des dépendances : " . implode(', ', $blocked) . ". Supprimez d'abord les équipes associées ou changez leur catégorie.")
+                );
+            }
+            // Fin du code généré
+
+            $errors = $this->teamsListRepository->delete_categories($categoriesToDelete);
 
             if (empty($errors)) {
                 return new Result(EnumHttpCode::SUCCESS, array('Success'), 'Les catégories ont bien été supprimées.');

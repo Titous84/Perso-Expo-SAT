@@ -1,19 +1,17 @@
 /**
  * Jean-Philippe Bourassa, basé sur le travail de Tristan Lafontaine
  */
-import React from 'react';
-import { ValidatorForm } from 'react-material-ui-form-validator'
-import Judge from '../../types/judge';
-import { EMPTY_STRING, MAX_LENGTH_EMAIL, MAX_LENGTH_FIRST_NAME, MAX_LENGTH_LAST_NAME } from '../../utils/constants';
-import { Grid, Paper, FormControl, FormLabel, FormControlLabel, RadioGroup, Radio, Box } from '@mui/material';
-import styles from "./../../pages/ParticipantRegistration/ParticipantRegistrationPage.module.css";
-import { TextValidator } from 'react-material-ui-form-validator'
-import { SelectValidator } from 'react-material-ui-form-validator'
-import { INPUT_VARIANT } from '../../utils/muiConstants';
-import { TEXTS } from '../../lang/fr';
-import Category from '../../types/sign-up/category';
+import { Box, FormControl, FormControlLabel, FormLabel, Paper, Radio, RadioGroup } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
+import React from 'react';
+import { SelectValidator, TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
+import { TEXTS } from '../../lang/fr';
+import Judge from '../../types/judge';
+import Category from '../../types/sign-up/category';
+import { EMPTY_STRING, MAX_LENGTH_EMAIL, MAX_LENGTH_FIRST_NAME, MAX_LENGTH_LAST_NAME } from '../../utils/constants';
+import { INPUT_VARIANT } from '../../utils/muiConstants';
 import { createRandomKey } from '../../utils/utils';
+import styles from "./../../pages/ParticipantRegistration/ParticipantRegistrationPage.module.css";
 
 /**
  *  Composant inscription des juges

@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { Alert, Snackbar, SnackbarCloseReason } from '@mui/material';
+import * as React from 'react';
 
 /**
  * Valeurs possibles pour le type de message du snackbar.

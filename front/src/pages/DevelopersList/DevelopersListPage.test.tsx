@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import IPage from "../../types/IPage";
 import DevelopersListPage from './DevelopersListPage';
 
 /**

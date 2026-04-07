@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Enums\EnumHttpCode;
+
 use App\Models\User;
 use App\Models\Result;
 use PDOException;

@@ -1,6 +1,6 @@
-import React from "react";
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import React from "react";
 import styles from "../../pages/ParticipantRegistration/ParticipantRegistrationPage.module.css";
 
 type TYPEALERT = "error" | "warning" | "info" | "success"

@@ -1,15 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Box } from '@mui/material';
-import AllTeamsMembersTableToolbar from './AllTeamsMembersTableToolbar';
-import TemporarySnackbar, { SnackbarMessageType } from '../../TemporarySnackbar/TemporarySnackbar';
-import { validateMemberInfos } from '../Validations/ValidationMembers';
-import { ITeamsMember } from '../../../types/TeamsList/ITeamsMember';
-import { ITeam } from '../../../types/TeamsList/ITeam';
+import { useEffect, useState } from 'react';
 import TeamsListService from '../../../api/TeamsList/TeamsListService';
 import { TEXTS } from '../../../lang/fr';
+import { ITeam } from '../../../types/TeamsList/ITeam';
+import { ITeamsMember } from '../../../types/TeamsList/ITeamsMember';
 import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
+import TemporarySnackbar, { SnackbarMessageType } from '../../TemporarySnackbar/TemporarySnackbar';
+import { validateMemberInfos } from '../Validations/ValidationMembers';
+import AllTeamsMembersTableToolbar from './AllTeamsMembersTableToolbar';
 
 /**
  * Tableau qui affiche la liste des membres de toutes les équipes.
@@ -217,40 +215,47 @@ export default function AllTeamsMembersTable() {
 
     /**
      * Exécute lorsque le composant est monté.
+     * Bugfix : Si le backend retourne une liste vide ou un objet au lieu d'une liste, on s'assure que l'état local est mis à une liste vide pour éviter les erreurs dans le composant.
+     * @author Léandre Kanmegne - H26
      */
     useEffect(() => {
-        const fetchTeamsMembers = async () => {
-            try {
-                // Récupère la liste des membres de toutes les équipes.
-                const response = await TeamsListService.tryGetTeamsMembers();
-                if (response.error) {
-                    ShowErrors(response.error)
-                } else if (response.data) {
-                    setTeamsMembersArray(response.data); // Met à jour les données du tableau.
-                }
+      const fetchTeamsMembers = async () => {
+        try {
+          // Récupère la liste des membres de toutes les équipes.
+          const response = await TeamsListService.tryGetTeamsMembers();
+          const membersData = response.data;
+          setTeamsMembersArray(
+            Array.isArray(membersData) &&
+              membersData.length > 0 &&
+              typeof membersData[0] === 'object'
+              ? membersData
+              : [],
+          );
 
-                const teamsNamesResponse = await TeamsListService.tryGetTeamsMembersConcats();
-                if (teamsNamesResponse.error) {
-                    // Affiche un message d'erreur.
-                    setSnackbarMessage(teamsNamesResponse.error);
-                    setSnackbarMessageType("error");
-                    setIsSnackbarOpen(true);
-                } else {
-                    // Conversion des données de l'API en un tableau d'objets avec id et name
-                    const transformedTeams = (teamsNamesResponse.data || []).map((team: ITeam) => ({
-                        id: team.team_id,
-                        name: team.title,
-                    }));
+          const teamsNamesResponse =
+            await TeamsListService.tryGetTeamsMembersConcats();
+          const teamsData = teamsNamesResponse.data;
+          const transformedTeams = (
+            Array.isArray(teamsData) &&
+            teamsData.length > 0 &&
+            typeof teamsData[0] === 'object'
+              ? teamsData
+              : []
+          ).map((team: ITeam) => ({
+            id: team.team_id,
+            name: team.title,
+          }));
 
-                    setEquipes(transformedTeams); // Définit les données transformées
-                }
-            } catch (error) {
-                ShowErrors('Une erreur est survenue lors de la récupération des membres des équipes');
-            }
-        };
+          setEquipes(transformedTeams);
+        } catch (error) {
+          ShowErrors(
+            'Une erreur est survenue lors de la récupération des membres des équipes',
+          );
+        }
+      };
 
-        fetchTeamsMembers();
-    }, []) // Le tableau vide [] signifie que cet effet s'exécute uniquement au montage.
+      fetchTeamsMembers();
+    }, []); // Le tableau vide [] signifie que cet effet s'exécute uniquement au montage.
 
     // Retourne le tableau des membres des équipes et le dialog de confirmation.
     return (
@@ -275,9 +280,6 @@ export default function AllTeamsMembersTable() {
           confirmationButtonOnClick={deleteSelectedMembers} // Passer une référence de la méthode de suppression pour que l'enfant puisse la déclencher.
         />
 
-        {/* Conteneur scrollable pour éviter la coupure visuelle du tableau. */}
-        {/* @author Nathan Reyes */}
-        <Box sx={{ width: '100%', overflowX: 'auto' }}>
         <DataGrid<ITeamsMember>
           pageSizeOptions={[25, 50, 100]}
           initialState={{
@@ -298,7 +300,6 @@ export default function AllTeamsMembersTable() {
               setIsSnackbarOpen(true); // Déclencher l'affichage du snackbar.
             }
           }}
-          autoHeight
           sx={{ width: '100%', minHeight: 400 }} // Le tableau prend 100% de la largeur et une hauteur minimale de 400px.
           slots={{
             // Passer <AllTeamsMembersToolbar /> comme barre d'outils pour ce tableau.
@@ -315,7 +316,6 @@ export default function AllTeamsMembersTable() {
             setSelectedMembersIds(newSelection.map((id) => Number(id)));
           }}
         />
-        </Box>
       </>
     );
 }

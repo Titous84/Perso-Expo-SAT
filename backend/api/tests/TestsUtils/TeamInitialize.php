@@ -8,6 +8,8 @@ use App\Utils\GeneratorUUID;
  * TeamInitialize
  * @author Tristan Lafontaine
  * Classe qui initialise des équipes pour les tests
+ * Bugfix : Modification des donnees d'initialisation des équipes
+ * @author Léandre Kanmegne - H26
  */
 class TeamInitialize{
     /**
@@ -21,7 +23,7 @@ class TeamInitialize{
 		return new Team(array(
 			"title" => "Informatique",
 			"description" => "Description",
-			"category" => "Humain",
+			"category" => "Sciences physiques",
 			"year" => "1er année",
 			"contactPerson" => array(
 				array(
@@ -34,12 +36,14 @@ class TeamInitialize{
 					"firstName" => "testfirsname",
 					"lastName" => "testlastname",
 					"email" => "test@gmail.com",
+                                        "numero_da" => "1234567",
 					"pictureConsent" => 1,
 				),
 				array(
 					"firstName" => "testtwofirtname",
 					"lastName" => "testtwolastname",
 					"email" => "test@live.ca",
+                                        "numero_da" => "7654321",
 					"pictureConsent" => 0,
 				)
 			)
@@ -57,7 +61,7 @@ class TeamInitialize{
 		return new Team(array(
 			"title" => "Informatique",
 			"description" => "Description",
-			"category" => "Projet TES",
+			"category" => "Chimie",
 			"year" => "1er année",
 			"contactPerson" => array(
 				array(
@@ -70,12 +74,14 @@ class TeamInitialize{
 					"firstName" => "testfirsname",
 					"lastName" => "testlastname",
 					"email" => "test@gmail.com",
+                                        "numero_da" => "1234567",
 					"pictureConsent" => 1,
 				),
 				array(
 					"firstName" => "testtwofirtname",
 					"lastName" => "testtwolastname",
 					"email" => "test@live.ca",
+                                        "numero_da" => "7654321",
 					"pictureConsent" => 1,
 				)
 			)
@@ -93,7 +99,7 @@ class TeamInitialize{
 		return new Team(array(
 			"title" => "Informatique",
 			"description" => "Description",
-			"category" => "Humain",
+			"category" => "Sciences physiques",
 			"year" => "1er année",
 			"contactPerson" => array(
 				array(
@@ -106,12 +112,14 @@ class TeamInitialize{
 					"firstName" => "FirstName",
 					"lastName" => "LastName",
 					"email" => "testTwo@gmail.com",
+                                        "numero_da" => "1111111",
 					"pictureConsent" => 1,
 				),
 				array(
 					"firstName" => "FirstName2",
 					"lastName" => "LastName2",
 					"email" => "testTwo@live.ca",
+                                        "numero_da" => "2222222",
 					"pictureConsent" => 1,
 				)
 			)
@@ -129,7 +137,7 @@ class TeamInitialize{
 		return new Team(array(
 			"title" => "Informatique",
 			"description" => "Description",
-			"category" => "Humain",
+			"category" => "Sciences physiques",
 			"year" => "1er année",
 			"contactPerson" => array(
 				array(
@@ -142,12 +150,14 @@ class TeamInitialize{
 					"firstName" => "FirstName",
 					"lastName" => "LastName",
 					"email" => "test@gmail.com",
+                                        "numero_da" => "1234567",
 					"pictureConsent" => 1,
 				),
 				array(
 					"firstName" => "FirstName",
 					"lastName" => "LastName",
 					"email" => "test@gmail.com",
+                                        "numero_da" => "1234567",
 					"pictureConsent" => 1,
 				)
 			)

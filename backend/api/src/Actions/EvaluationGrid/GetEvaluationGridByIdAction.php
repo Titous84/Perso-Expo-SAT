@@ -2,7 +2,6 @@
 
 namespace App\Actions\EvaluationGrid;
 
-use App\Enums\EnumHttpCode;
 use App\Services\EvaluationGridService;
 use App\Services\TokenService;
 use Psr\Http\Message\ResponseInterface;

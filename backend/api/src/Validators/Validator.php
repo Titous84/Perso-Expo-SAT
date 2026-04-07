@@ -56,7 +56,7 @@ class Validator
      * ce qui permet de gérer correctement les valeurs nulles et autres types de données.
      * Code généré par : OpenAI. (2026). ChatGPT (version 5.4 Mars 2026) [Modèle massif de langage]. https://chatgpt.com/
      */
-    public function is_empty(mixed $value): bool
+    public function is_empty($value): bool
     {
         return !strlen((string)$value);
     }

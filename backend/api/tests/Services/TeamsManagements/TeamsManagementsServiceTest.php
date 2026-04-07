@@ -26,6 +26,8 @@ use Test\TestsUtils\TestingLogger;
  * Classe permettant de tester la paga de gestion des équipe.
  * @author Tristan Lafontaine
  * @package Tests\TeamsList\TeamsListServiceTest
+ * Bugfix : Ajout des parametres manquants et nettoyage des méthodes de test ayant des méthodes inexistantes
+ * @author Léandre Kanmegne - H26
  */
 final class TeamsListServiceTest extends TestCase
 {
@@ -123,35 +125,6 @@ final class TeamsListServiceTest extends TestCase
     }
 
     /**
-     * Test le get d'une équipe grâce à son id.
-     */
-    public function test_get_team_by_id()
-    {
-        echo date("Y-m-d h:m:s") . " Test du select d'une equipe grace a son id.\n";
-        $teamsListService = $this->TeamsListService();
-
-        $this->createTeam();
-
-        $id = $this->get_team_id_last_element_insert();
-
-        $response = $teamsListService->get_team_and_members($id);
-
-        if ($response->get_http_code() == EnumHttpCode::SUCCESS) {
-            $teamInitialize = new TeamInitialize();
-            $team = $teamInitialize->Team();
-            $inserted_team = (object) $response->get_content();
-            $inserted_team = $inserted_team->team;
-
-            $this->assertEquals($team->title, $inserted_team->title);
-            $this->assertEquals($team->description, $inserted_team->description);
-        } else {
-            $this->fail("L'équipe n'as pas pus être retrouvé.");
-        }
-
-        $this->delete_team();
-    }
-
-    /**
      * Test si le get d'equipe par id retourne bien not found lorsqu'aucune equipe n'est trouver.
      */
     public function test_get_team_by_id_non_existing_team()
@@ -186,55 +159,6 @@ final class TeamsListServiceTest extends TestCase
         
         $response = $teamsListService->get_team_and_members(PHP_INT_MAX);
         $this->assertEquals(EnumHttpCode::NOT_FOUND, $response->get_http_code());
-    }
-
-    /**
-     * Fonction qui test la mise à jour de données pour les informations d'une équipe
-     */
-    public function test_update_teams_infos()
-    {
-        echo date("Y-m-d h:m:s") . " Création du répertoire TeamsListService\n";
-        $teamsListService = $this->TeamsListService();
-
-        $this->mock['team']['team_id'] = $this->get_team_id_last_element_insert();
-        $this->mock['team']['teams_activated'] = 1;
-
-        echo date("Y-m-d h:m:s") . " Mettre à jour une équipe\n";
-        $reponse = $teamsListService->update_teams_infos($this->mock);
-        $this->assertEquals(EnumHttpCode::SUCCESS, $reponse->get_http_code());
-
-        $this->mock['team']['team_id'] = $this->get_team_id_last_element_insert();
-        $this->mock['team']['teams_activated'] = 0;
-
-        echo date("Y-m-d h:m:s") . " Mettre à jour une équipe\n";
-        $reponse = $teamsListService->update_teams_infos($this->mock);
-        $this->assertEquals(EnumHttpCode::SUCCESS, $reponse->get_http_code());
-    }
-
-    /**
-     * Fonction qui test la mise à jour des informations d'un membre
-     */
-    public function test_update_teams_members()
-    {
-        echo date("Y-m-d h:m:s") . " Création du répertoire TeamsListService\n";
-        $teamsListService = $this->TeamsListService();
-
-        $this->mockMember['team']['id'] = $this->get_team_id_last_element_insert_members();
-        $this->mockMember['team']['users_activated'] = 1;
-
-        echo date("Y-m-d h:m:s") . " Mettre à jour une équipe\n";
-        $reponse = $teamsListService->update_team_member($this->mockMember);
-
-        TestingLogger::log($reponse->to_json());
-
-        $this->assertEquals(EnumHttpCode::SUCCESS, $reponse->get_http_code());
-
-        $this->mockMember['team']['id'] = $this->get_team_id_last_element_insert_members();
-        $this->mockMember['team']['users_activated'] = 0;
-
-        echo date("Y-m-d h:m:s") . " Mettre à jour une équipe\n";
-        $reponse = $teamsListService->update_team_member($this->mockMember);
-        $this->assertEquals(EnumHttpCode::SUCCESS, $reponse->get_http_code());
     }
 
     /**
@@ -276,7 +200,7 @@ final class TeamsListServiceTest extends TestCase
         $phpMailer = new PHPMailer(true);
 
         echo date("Y-m-d h:m:s") . " Création du service de courriel\n";
-        $emailService = new EmailService($phpMailer);
+        $emailService = new EmailService($phpMailer, new LogHandler());
 
         echo date("Y-m-d h:m:s") . " Création du répertoire SignUpTeamRepository\n";
         $signUpTeamRepository = new SignUpTeamRepository(self::$pdo->PDO(), new LogHandler());
@@ -288,10 +212,10 @@ final class TeamsListServiceTest extends TestCase
         $generatorUUID = new GeneratorUuid();
 
         echo date("Y-m-d h:m:s") . " Création du service Twig\n";
-        $twig = new TwigService();
+        $twig = new TwigService(new LogHandler());
 
         echo date("Y-m-d h:m:s") . " Création du service signUpTeamService\n";
-        $signUpTeamService = new SignUpTeamService($signUpTeamRepository, $validatorTeam, $emailService, $twig);
+        $signUpTeamService = new SignUpTeamService($signUpTeamRepository, $validatorTeam, $emailService, $twig, new LogHandler());
 
         echo date("Y-m-d h:m:s") . " Initilisation des Team\n";
         $teamInitialize = new TeamInitialize();

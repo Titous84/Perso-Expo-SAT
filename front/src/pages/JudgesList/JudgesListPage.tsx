@@ -1,15 +1,14 @@
-import { Checkbox, FormControl, InputLabel, MenuItem, Select, Typography, TextField } from "@mui/material";
+import { AlertColor, Checkbox, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { ICategories } from "../../types/TeamsList/ICategories";
-import Judge from "../../types/judge";
-import JudgeTableToolbar from "./JudgeTableToolbar";
-import JudgeUpdate from "../../types/judgeUpdate";
+import { useEffect, useState } from "react";
 import TeamsListService from "../../api/TeamsList/TeamsListService";
 import UserService from "../../api/users/userService";
-import { TEXTS } from "../../lang/fr";
-import { useState, useEffect } from "react";
-import { AlertColor } from "@mui/material";
 import TemporarySnackbar from "../../components/TemporarySnackbar/TemporarySnackbar";
+import { TEXTS } from "../../lang/fr";
+import { ICategories } from "../../types/TeamsList/ICategories";
+import Judge from "../../types/judge";
+import JudgeUpdate from "../../types/judgeUpdate";
+import JudgeTableToolbar from "./JudgeTableToolbar";
 
 type SnackbarMessageType = AlertColor;
 

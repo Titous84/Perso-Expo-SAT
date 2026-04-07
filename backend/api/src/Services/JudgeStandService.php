@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Enums\EnumHttpCode;
-use App\Handlers\LogHandler;
-use App\Models\Credential;
 use App\Models\Result;
 use App\Repositories\JudgeStandRepository;
 
@@ -116,12 +114,12 @@ final class JudgeStandService
      * Code inspiré des autres fichiers Services de manière à respecter la structure du projet.
      * @return Result Le résultat contenant les états d'exclusion de la note globale.
      * Bugfix @author Léandre Kanmegne H-26
-     * Correction du message de succès et evitement d'une erreur potentielle en cas de données nulles en utilisant l'opérateur de coalescence nulle (??) pour retourner un tableau vide si aucune exclusion n'est trouvée.
+     * Correction du message de succès 
      */
     public function getScoreExclusions(): Result
     {
         $exclusions = $this->repository->fetchScoreExclusions();
-            return new Result(EnumHttpCode::SUCCESS, ["Nous avons trouvé les exclusions de la note globale avec succès !"], $exclusions ?? []);
+            return new Result(EnumHttpCode::SUCCESS, ["Nous avons trouvé les exclusions de la note globale avec succès !"], $exclusions);
     }
 
     /**
