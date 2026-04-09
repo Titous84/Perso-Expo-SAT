@@ -89,7 +89,7 @@ describe('AdministratorsListPage', () => {
     await waitFor(() => {
       expect(UserService.resetEventData).toHaveBeenCalledTimes(1);
       expect(ShowToast).toHaveBeenCalledWith(
-        'Une erreur est survenue lors de la réinitialisation des données annuelles.',
+        'Erreur simulée',
         5000,
         'error',
         'top-center',

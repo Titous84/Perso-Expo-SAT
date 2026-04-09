@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test, vi, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import ParticipantRegistrationPage from './ParticipantRegistrationPage';
 import SignUpService from '../../api/signUp/signUpService';
 import { TEXTS } from '../../lang/fr';
@@ -74,6 +75,9 @@ vi.mock('../../components/signup/team-member', () => ({
 describe('ParticipantRegistrationPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock de scrollTo pour éviter l'erreur jsdom "Not implemented".
+    // @author Nathan Reyes
+    window.scrollTo = vi.fn();
 
     vi.mocked(SignUpService.tryGetCategory).mockResolvedValue({
       data: [
@@ -90,11 +94,13 @@ describe('ParticipantRegistrationPage', () => {
     } as any);
 
     vi.mocked(SignUpService.tryGetContactPersons).mockResolvedValue({ data: [] } as any);
-    vi.mocked(SignUpService.tryPostTeam).mockResolvedValue({ data: { message: 'Ajout réussi' } } as any);
+    // Retour différent de "Ajout réussi" pour éviter la redirection <Navigate> pendant les assertions.
+    // @author Nathan Reyes
+    vi.mocked(SignUpService.tryPostTeam).mockResolvedValue({ data: { message: 'Réponse test' } } as any);
   });
 
   test("permet de conserver un minimum d'un seul membre", async () => {
-    render(<ParticipantRegistrationPage />);
+    render(<ParticipantRegistrationPage />, { wrapper: MemoryRouter });
 
     // Attendre que la page soit affichée.
     // @author Nathan Reyes
@@ -117,7 +123,7 @@ describe('ParticipantRegistrationPage', () => {
   });
 
   test("envoie les champs anonymat et consentement photo lors d'une inscription", async () => {
-    render(<ParticipantRegistrationPage />);
+    render(<ParticipantRegistrationPage />, { wrapper: MemoryRouter });
 
     await screen.findByTestId('inscription');
 
