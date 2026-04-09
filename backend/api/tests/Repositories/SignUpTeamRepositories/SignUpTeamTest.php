@@ -283,4 +283,35 @@ final class SignUpTeamTest extends TestCase {
 
 		$this->assertEquals("Tristan",$response,"Erreur : test_uppercase_first_letter");
 	}
+
+	/**
+	 * Vérifie que le numéro d'équipe utilise l'acronyme exact de la catégorie.
+	 * @author Nathan Reyes
+	 * @return void
+	 */
+	public function test_team_number_uses_exact_category_acronym(){
+		$logHandler = new LogHandler();
+		$signUpTeamRepository = new SignUpTeamRepository(self::$pdo->PDO(), $logHandler);
+
+		// Prépare une équipe test et l'insère.
+		// @author Nathan Reyes
+		$teamInitialize = new TeamInitialize();
+		$team = $teamInitialize->Team();
+		$token = GeneratorUuid::generate_UUID_array(sizeOf($team->members));
+		$signUpTeamRepository->add_team($team, $token);
+
+		// Récupère l'équipe créée et sa catégorie afin de valider le format.
+		// @author Nathan Reyes
+		$teams = $signUpTeamRepository->get_all_team_by_title_and_description("Informatique","Description");
+		$createdTeam = $teams[0];
+		$category = $signUpTeamRepository->get_category($team->category);
+		$acronym = $category["acronym"];
+
+		$this->assertTrue(
+			str_starts_with($createdTeam["team_number"], $acronym),
+			"Erreur : le numéro d'équipe ne commence pas par l'acronyme de la catégorie."
+		);
+
+		$this->test_delete_team();
+	}
 }

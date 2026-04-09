@@ -476,4 +476,75 @@ final class UserServiceTest extends TestCase {
         // Test que le code de statut HTTP est 500.
         $this->assertEquals(EnumHttpCode::SERVER_ERROR, $httpStatusCode, "L'API n'a pas retourné le code de status HTTP 500.");
     }
+
+    /**
+     * Vérifie que la réinitialisation annuelle retourne un succès quand le repository réussit.
+     * @author Nathan Reyes
+     */
+    public function test_reset_event_data_success()
+    {
+        // Mock du repository pour simuler une réinitialisation annuelle réussie.
+        // @author Nathan Reyes
+        $mockedUserRepository = $this->createMock(UserRepository::class);
+        $mockedUserRepository->method('reset_event_data')->willReturn(true);
+
+        $logHandler = new LogHandler();
+        $userService = new UserService(
+            $mockedUserRepository,
+            new ValidatorUserRole(),
+            $logHandler,
+            new ValidatorUser($logHandler),
+            new ValidatorAdministrator(),
+            new ValidatorJudge($logHandler),
+            new EmailService(new PHPMailer(), new LogHandler()),
+            new TwigService(new LogHandler()),
+            new VerificationCodeService(
+                new VerificationCodeRepository(self::$pdo, $logHandler),
+                $logHandler,
+                new ValidatorVerificationCode($logHandler),
+                new GeneratorUUID()
+            ),
+        );
+
+        $serviceResponse = $userService->reset_event_data();
+        $this->assertEquals(EnumHttpCode::SUCCESS, $serviceResponse->get_http_code());
+        $this->assertEquals(true, $serviceResponse->get_content());
+    }
+
+    /**
+     * Vérifie que la réinitialisation annuelle retourne une erreur serveur quand le repository échoue.
+     * @author Nathan Reyes
+     */
+    public function test_reset_event_data_repository_failure()
+    {
+        // Mock du repository pour simuler un échec de la réinitialisation annuelle.
+        // @author Nathan Reyes
+        $mockedUserRepository = $this->createMock(UserRepository::class);
+        $mockedUserRepository->method('reset_event_data')->willReturn(false);
+
+        $logHandler = new LogHandler();
+        $userService = new UserService(
+            $mockedUserRepository,
+            new ValidatorUserRole(),
+            $logHandler,
+            new ValidatorUser($logHandler),
+            new ValidatorAdministrator(),
+            new ValidatorJudge($logHandler),
+            new EmailService(new PHPMailer(), new LogHandler()),
+            new TwigService(new LogHandler()),
+            new VerificationCodeService(
+                new VerificationCodeRepository(self::$pdo, $logHandler),
+                $logHandler,
+                new ValidatorVerificationCode($logHandler),
+                new GeneratorUUID()
+            ),
+        );
+
+        $serviceResponse = $userService->reset_event_data();
+        $this->assertEquals(EnumHttpCode::SERVER_ERROR, $serviceResponse->get_http_code());
+        $this->assertEquals(
+            array("Une erreur est survenue lors de la réinitialisation des données."),
+            $serviceResponse->get_message()
+        );
+    }
 }
