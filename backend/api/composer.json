@@ -4,7 +4,7 @@
   "type": "project",
   "config": {
     "platform": {
-      "php": "8.2.0"
+      "php": "7.4.27"
     },
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
@@ -62,13 +62,12 @@
     }
   ],
   "require-dev": {
-    "phpunit/phpunit": "^9.6",
+    "phpunit/phpunit": "9.*",
     "symfony/dotenv": "^5.4",
     "phpstan/phpstan": "^2.1",
     "slevomat/coding-standard": "^8.28"
   },
   "require": {
-    "php": "^8.2",
     "slim/slim": "4.*",
     "slim/psr7": "^1.5",
     "php-di/slim-bridge": "^3.1",

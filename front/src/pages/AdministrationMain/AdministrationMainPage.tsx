@@ -1,4 +1,4 @@
-import { Box, Divider, Stack } from "@mui/material";
+import { Container, Divider, Stack } from "@mui/material";
 import AdministrationNavigationSidebar from "../../components/AdministrationMainPage/AdministrationNavigationSidebar";
 import { ADMINISTRATION_MAIN_PAGE_TABS } from "../../types/AdministrationMainPage/AdministrationMainPageTabs";
 import IPage from "../../types/IPage";
@@ -82,13 +82,10 @@ export default class AdministrationMainPage extends IPage<{}, AdministrationMain
                     <Divider orientation="vertical" flexItem />
 
                     {/* Zône du contenu de l'onglet sélectionné */}
-                    {/* Zone de contenu fluide: éviter le Container MUI (max-width)
-                        qui comprimait les tableaux et forçait un dézoom navigateur. */}
-                    {/* @author Nathan Reyes */}
-                    <Box sx={{ flex: 1, minWidth: 0, width: "100%", px: 2 }}>
+                    <Container>
                         {/* Rendu dynamique du composant React */}
                         {React.createElement(this.state.componentToDisplayInContentZone)}
-                    </Box>
+                    </Container>
                 </Stack>
             </div>
         )

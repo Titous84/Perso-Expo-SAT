@@ -285,28 +285,17 @@ class UserRepository extends Repository
     public function reset_event_data(): bool
     {
         try {
-            // Démarre une transaction pour garantir une réinitialisation cohérente.
-            // @author Nathan Reyes
-            $this->db->beginTransaction();
-
-            // Supprime UNIQUEMENT les données demandées pour la réinitialisation annuelle:
-            // - équipes (et leurs liens),
-            // - horaires de passage (via les évaluations),
-            // - résultats.
-            // IMPORTANT: on ne supprime PAS les administrateurs, ni les juges.
-            // @author Nathan Reyes
-            //
-            // NOTE: la table de référence time_slots est conservée; ce sont les
-            // assignations de passage qui sont réinitialisées en supprimant evaluation.
+            // Supprimer les liens et données opérationnelles de l'évènement.
             // @author Nathan Reyes
             $queries = [
                 "DELETE FROM criteria_evaluation",
                 "DELETE FROM evaluation",
-                "DELETE FROM results",
                 "DELETE FROM users_teams",
                 "DELETE FROM teams_contact_person",
-                "DELETE FROM contact_person",
                 "DELETE FROM teams",
+                // On conserve les juges d'une année à l'autre et on retire seulement les participants.
+                // @author Nathan Reyes
+                "DELETE FROM users WHERE role_id = 3",
                 "UPDATE info_events SET event_processed = 0"
             ];
 
@@ -315,16 +304,8 @@ class UserRepository extends Repository
                 $stmt->execute();
             }
 
-            // Confirme toutes les suppressions si aucune erreur n'est survenue.
-            // @author Nathan Reyes
-            $this->db->commit();
             return true;
         } catch (PDOException $exception) {
-            // Annule les changements en cas d'échec pour éviter un état partiellement réinitialisé.
-            // @author Nathan Reyes
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
-            }
             $context["http_error_code"] = $exception->getCode();
             $this->logHandler->critical($exception->getMessage(), $context);
             return false;
