@@ -1,9 +1,15 @@
 # Documentation des modifications par cas d'utilisation
 
-## Cas 1 — Inscriptions (anonymat + clauses de consentement photo)
+Ce document regroupe les travaux par **cas d'utilisation (CU)**, en séparant les tâches par domaine (BDD, backend, frontend, UX) afin de faciliter la lecture et le suivi.
 
-### Fichiers modifiés
+---
 
+## CU-1 — Inscriptions : anonymat + clauses de consentement photo
+
+### Objectif
+Permettre, lors de l'inscription d'un participant, de choisir une clause de consentement photo et d'activer l'anonymat.
+
+### Fichiers concernés
 - `migrations/2026-02-26_add_anonymat_et_clauses_photo.sql`
 - `front/src/types/sign-up/team-member.ts`
 - `front/src/pages/ParticipantRegistration/ParticipantRegistrationPage.tsx`
@@ -11,18 +17,26 @@
 - `backend/api/src/Validators/ValidatorTeam.php`
 - `backend/api/src/Repositories/SignUpTeamRepository.php`
 
-### Résumé
+### Tâches réalisées
+#### Base de données
+- Ajout des colonnes `is_anonymous` et `photo_consent_clause` dans `users` via migration.
 
-- Ajout d'une migration SQL pour supporter `is_anonymous` et `photo_consent_clause` dans `users`.
-- Ajout des champs côté front dans le type `TeamMember`.
-- Ajout des champs au formulaire d'inscription participant (sélection de clause + anonymat).
-- Validation backend des nouvelles informations.
-- Persistance backend des nouvelles informations lors de la création des membres.
+#### Frontend
+- Extension du type `TeamMember` avec les nouveaux champs.
+- Ajout des champs dans le formulaire d'inscription (choix de la clause + anonymat).
 
-## Cas 2 — Réinitialisation de fin d'évènement + renommage de l'onglet
+#### Backend
+- Validation des nouvelles valeurs reçues lors de l'inscription.
+- Sauvegarde des champs `photo_consent_clause` et `is_anonymous` lors de la création des membres.
 
-### Fichiers modifiés
+---
 
+## CU-2 — Réinitialisation de fin d'évènement + ajustements d'administration
+
+### Objectif
+Introduire un flux de réinitialisation annuelle piloté par les administrateurs et améliorer la gestion des utilisateurs d'administration.
+
+### Fichiers concernés
 - `backend/api/src/Actions/Administrators/PostResetEventDataAction.php`
 - `backend/api/src/Services/UserService.php`
 - `backend/api/src/Repositories/UserRepository.php`
@@ -34,27 +48,35 @@
 - `front/src/types/AdministrationMainPage/AdministrationMainPageTabs.ts`
 - `front/src/lang/fr.ts`
 
-### Résumé
+### Tâches réalisées
+#### Backend API
+- Ajout d'une route admin dédiée au reset annuel.
+- Ajout du service et du repository pour exécuter la réinitialisation des données événementielles.
 
-- Ajout d'une route API admin pour lancer la réinitialisation annuelle.
-- Ajout d'une méthode service/référentiel backend pour vider les données évènementielles.
-- Ajout d'un bouton dans la page administrateurs pour déclencher la réinitialisation.
-- Conservation des juges lors de la réinitialisation annuelle (ils ne sont plus supprimés).
-- Ajout d'une option pour désactiver des juges sélectionnés dans la page de gestion des juges.
-- Renommage de l'onglet « Administrateurs » en « Paramètres généraux ».
+#### Frontend administration
+- Ajout d'un bouton de déclenchement de la réinitialisation annuelle.
+- Renommage de l'onglet « Administrateurs » vers « Paramètres généraux ».
 
-## Cas 3 — Correctifs inscription, interface et récupération de mot de passe
+#### Gestion des juges
+- Conservation des juges dans le flux de réinitialisation.
+- Ajout d'une option de désactivation de juges sélectionnés.
 
-### Fichiers modifiés
+---
 
+## CU-3 — Correctifs inscription, mot de passe oublié, UI et cohérence métier
+
+### Objectif
+Stabiliser le parcours d'inscription et corriger plusieurs comportements transversaux (inscription, récupération de mot de passe, affichage UI).
+
+### Fichiers concernés
 - `backend/api/src/Repositories/SignUpTeamRepository.php`
 - `backend/api/src/Services/SignUpTeamService.php`
 - `backend/api/src/Services/VerificationCodeService.php`
+- `backend/api/src/Validators/ValidatorTeam.php`
 - `front/src/pages/ParticipantRegistration/ParticipantRegistrationPage.tsx`
+- `front/src/components/signup/team-member.tsx`
 - `front/src/api/verificationCode/verificationCodeService.ts`
 - `front/src/api/users/userService.ts`
-- `backend/api/src/Validators/ValidatorTeam.php`
-- `front/src/components/signup/team-member.tsx`
 - `front/src/components/TeamsListPage/TeamsTables/TeamsTable.tsx`
 - `front/src/utils/constants.ts`
 - `front/src/lang/fr.ts`
@@ -64,53 +86,71 @@
 - `front/src/pages/EvaluationGridsList/EvaluationGridsListPage.tsx`
 - `front/src/pages/EvaluationGridsList/EvaluationGridsListPage.module.css`
 
-### Résumé
+### Tâches réalisées
+#### Inscriptions (règles métier)
+- Déplacement de la génération du numéro d'équipe côté backend (incrémentation fiable par catégorie).
+- Alignement du format du numéro d'équipe avec l'acronyme exact de la catégorie (ex. `SH-IS1`, `Info2`).
+- Validation explicite de l'envoi des courriels aux personnes-ressources.
+- Validation stricte du numéro DA sur exactement 7 chiffres (frontend + backend).
+- Autorisation d'inscription avec un seul membre (frontend + backend).
 
-- Génération du numéro d'équipe déplacée côté backend pour assurer une incrémentation fiable par catégorie.
-- Alignement du format des numéros d'équipe avec l'acronyme exact de la catégorie (ex: `SH-IS1`, `Info2`).
-- Validation explicite de l'envoi des courriels aux personnes-ressources au moment de l'inscription d'une équipe.
-- Harmonisation du format retourné par la validation du code de vérification (`{ email }`) pour corriger le flux « mot de passe oublié ».
-- Ajustement des appels front du module « mot de passe oublié » pour utiliser les routes publiques sans jeton.
-- Validation stricte du numéro DA à exactement 7 chiffres (front + backend) avec messages adaptés.
-- Possibilité d'inscrire une équipe avec un seul membre (front + backend).
-- Ajustement CSS des barres de navigation (haut/bas) pour occuper toute la largeur visible.
-- Refonte de la page « Gestion des grilles d'évaluation » avec une interface plus claire (entête, recherche, état vide, cartes d'actions).
-- Amélioration de l'affichage du tableau admin des équipes avec un mode de consultation détaillé (double-clic sur une ligne) pour voir toutes les informations sans troncature.
+#### Mot de passe oublié
+- Harmonisation du format de réponse de validation (`{ email }`).
+- Migration des appels front vers les routes publiques sans jeton.
 
-## Cas 4 — Correctifs affichage complet des tableaux équipes + réinitialisation annuelle robuste
+#### Interface (UX/UI)
+- Ajustement CSS des barres de navigation (haut/bas) sur toute la largeur visible.
+- Refonte de la page « Gestion des grilles d'évaluation ».
+- Amélioration de la consultation du tableau admin des équipes (mode détail via double-clic).
 
-### Fichiers modifiés
+---
 
+## CU-4 — Affichage complet des tableaux équipes + reset annuel robuste
+
+### Objectif
+Corriger les coupures visuelles dans les tableaux d'administration et fiabiliser techniquement la réinitialisation annuelle.
+
+### Fichiers concernés
 - `front/src/components/TeamsListPage/TeamsTables/TeamsTable.tsx`
 - `front/src/components/TeamsListPage/AllTeamsMembersTable/AllTeamsMembersTable.tsx`
 - `backend/api/src/Repositories/UserRepository.php`
 - `DOCUMENTATION/CAS_UTILISATIONS_MODIFICATIONS.md`
 
-### Résumé
+### Tâches réalisées
+#### Tableaux (frontend)
+- Ajout d'un conteneur horizontal scrollable et de `autoHeight` pour afficher complètement les tableaux.
+- Ajustement responsive des colonnes (`flex`, `minWidth`) + masquage de colonnes secondaires par défaut.
+- Remplacement de `Container` par `Box` dans la page d'administration pour supprimer la contrainte de `max-width`.
 
-- Ajout d'un conteneur horizontal scrollable et de `autoHeight` sur les tableaux « Vue des équipes » et « Vue des membres » afin d'éviter la coupure visuelle et d'afficher le tableau au complet selon l'espace disponible.
-- Ajustement responsive des colonnes du tableau des équipes (`flex` + `minWidth`) et masquage par défaut de colonnes secondaires afin d'améliorer l'affichage complet à zoom normal (100%) sans dézoomer la page.
-- Remplacement du `Container` MUI par une zone de contenu fluide (`Box`) dans la page d'administration, car la `max-width` du `Container` comprimait les tableaux et causait l'affichage tronqué.
-- Renforcement de la réinitialisation annuelle côté backend avec transaction SQL (`beginTransaction` / `commit` / `rollBack`) pour éviter les états partiels qui pouvaient provoquer des bogues d'affichage.
-- Extension de la réinitialisation annuelle pour inclure explicitement :
-  - la réinitialisation des horaires de passage via la suppression des évaluations (tout en conservant la table de référence `time_slots`),
-  - les résultats (`results`),
-  - les évaluations et critères d'évaluation,
-  - les liaisons d'équipes et les contacts associés,
-  - les équipes et les participants.
-- Les changements de ce cas ont été réalisés et commentés par `@author Nathan Reyes`.
+#### Réinitialisation annuelle (backend)
+- Encapsulation du reset dans une transaction SQL (`beginTransaction`, `commit`, `rollBack`).
+- Extension du reset à l'ensemble des données événementielles nécessaires (évaluations, critères, résultats, équipes, liaisons, contacts, participants).
 
-## Cas 5 — Ajustement ciblé de la réinitialisation annuelle + confirmation utilisateur
+#### Traçabilité
+- Changements réalisés et commentés par `@author Nathan Reyes`.
 
-### Fichiers modifiés
+---
 
+## CU-5 — Ajustement final du périmètre de reset + confirmation utilisateur
+
+### Objectif
+Limiter précisément le reset annuel au besoin métier final et sécuriser l'action côté interface.
+
+### Fichiers concernés
 - `backend/api/src/Repositories/UserRepository.php`
 - `front/src/pages/AdministratorsList/AdministratorsListPage.tsx`
 - `DOCUMENTATION/CAS_UTILISATIONS_MODIFICATIONS.md`
 
-### Résumé
+### Tâches réalisées
+#### Backend
+- Réduction du périmètre du reset :
+  - suppression des données d'équipes et liaisons,
+  - suppression des horaires de passage via `evaluation` et `criteria_evaluation`,
+  - suppression des résultats (`results`).
+- Conservation explicite des administrateurs et des juges.
 
-- Réduction du périmètre de la réinitialisation annuelle pour respecter le besoin métier: suppression uniquement des données d'équipes (et liaisons), des horaires de passage (via `evaluation` + `criteria_evaluation`) et des résultats (`results`).
-- Conservation explicite des administrateurs et des juges lors de la réinitialisation annuelle (plus aucune suppression de comptes utilisateurs dans ce flux).
-- Ajout d'un message de confirmation obligatoire côté interface d'administration avant de lancer la réinitialisation annuelle.
-- Les changements de ce cas ont été réalisés et commentés en français par `@author Nathan Reyes`.
+#### Frontend
+- Ajout d'une confirmation obligatoire avant déclenchement de la réinitialisation annuelle.
+
+#### Traçabilité
+- Changements réalisés et commentés en français par `@author Nathan Reyes`.
