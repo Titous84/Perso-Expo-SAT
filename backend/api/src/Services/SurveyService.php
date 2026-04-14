@@ -73,7 +73,6 @@ class SurveyService
 
     /**
      * Fonction qui permet d'obtenir toutes les formulaires assignés à un juge par son uuid.
-     * @param string $judge_uuid UUID du juge.
      * @return Result Retourne le résultat de l'opération de recherche des formulaires d'évaluations.
      */
     public function get_all_survey_by_judge_id(string $judgeUUID): Result

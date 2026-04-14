@@ -37,7 +37,7 @@ class ResultatRepository extends Repository
             users.last_name AS 'last_name_user',
             judge.id AS 'judge_id',
             evaluation.comments AS 'comments',
-            ROUND(SUM(criteria_evaluation.score * criteria.max_value) / SUM(criteria.max_value) * 10) AS 'global_score'        
+            ROUND(SUM(criteria_evaluation.score * criteria.max_value) / SUM(criteria.max_value) * 10, 2) AS 'global_score'        
         FROM evaluation
         INNER JOIN teams ON evaluation.teams_id = teams.id
         INNER JOIN categories ON teams.categories_id = categories.id
@@ -46,7 +46,7 @@ class ResultatRepository extends Repository
         INNER JOIN criteria_evaluation ON evaluation.id = criteria_evaluation.evaluation_id
         INNER JOIN criteria ON criteria_evaluation.criteria_id = criteria.id
         GROUP BY categories.name, teams.name, users.first_name, users.last_name, evaluation.comments, evaluation.id
-        ORDER BY categories.name, 'global_score' DESC;";
+        ORDER BY categories.name, global_score DESC;";
 
         $query = $this->db->prepare($sql);
         $query->execute();

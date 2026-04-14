@@ -41,177 +41,219 @@ interface SurveySectionState {
  * @author Jean-Christophe Demers
  *  Affiche les sections du formulaire avec des boutons pour passer d'une section à une autre.
  */
-export default class SurveySection extends React.Component<SurveySectionProps, SurveySectionState> {
+export default class SurveySection extends React.Component<
+  SurveySectionProps,
+  SurveySectionState
+> {
+  /**
+   *  Constructeur.
+   * @param props Prend en paramètre un objet de type SurveySectionProps.
+   */
+  constructor(props: SurveySectionProps) {
+    super(props);
+    this.state = {
+      sending: false,
+      prevcommentaire: this.props.commentaire,
+      actualSection: 0,
+    };
+  }
 
-    /**
-     *  Constructeur.
-     * @param props Prend en paramètre un objet de type SurveySectionProps.
-     */
-    constructor(props: SurveySectionProps) {
-        super(props)
-        this.state = {
-            sending: false,
-            prevcommentaire: this.props.commentaire,
-            actualSection: 0
-        }
+  /**
+   *  Fonction permettant de générer la section actuelle à afficher.
+   * @returns Retourne un objet React.
+   */
+  generateSection() {
+    return (
+      <div data-testid="survey-section">
+        <HorizontalNonLinearStepper
+          steps={this.obtenirListeNomSection()}
+          setActualSection={this.setActualSection.bind(this)}
+          returnToMenu={this.props.returnToMenu.bind(this)}
+        ></HorizontalNonLinearStepper>
+        <h2>
+          {this.state.actualSection === undefined
+            ? TEXTS.survey.commentaire
+            : this.props.listSection[this.state.actualSection].name}
+        </h2>
+        {this.generationQuestionOfSection()}
+        <h2>
+          Points totaux: {this.afficherPointsTotauxAttribue()}/
+          {this.afficherPointsTotauxFormulaire()}
+        </h2>
+      </div>
+    );
+  }
+
+  /**
+   *  Fonction permettant d'extraire des props le nom de toutes les sections.
+   * @returns Retourne un tableau de string.
+   */
+  obtenirListeNomSection() {
+    return this.props.listSection
+      .map((section) => {
+        return section.name;
+      })
+      .concat(TEXTS.survey.commentaire);
+  }
+
+  /**
+   *  Fonction qui permet de générer les questions dans la section.
+   * @returns Retourne un tableau d'objet React.
+   * Bugfix : Permet de rendre le bouton confirmer clickable meme si le commentaire n'est pas changé
+   * @author : Léandre Kanmegne - H26
+   */
+  generationQuestionOfSection() {
+    if (this.state.actualSection === undefined) {
+      return (
+        <div>
+          <textarea
+            id="outlined-number"
+            value={this.props.commentaire}
+            onChange={async (event) => {
+              this.setComment(event.target.value);
+            }}
+            maxLength={500}
+          />
+          {this.state.sending ? (
+            <CircularProgress size={50} color="inherit" />
+          ) : (
+            <ButtonExposat
+              disabled={this.state.sending}
+              onClick={() => this.sendComment()}
+              children={'Confirmer'}
+            />
+          )}
+        </div>
+      );
     }
-
-    /**
-     *  Fonction permettant de générer la section actuelle à afficher.
-     * @returns Retourne un objet React.
-     */
-    generateSection() {
+    return this.props.listSection[this.state.actualSection].questions?.map(
+      (question) => {
         return (
-            <div data-testid="survey-section">
-                <HorizontalNonLinearStepper
-                    steps={this.obtenirListeNomSection()}
-                    setActualSection={this.setActualSection.bind(this)}
-                    returnToMenu={this.props.returnToMenu.bind(this)}></HorizontalNonLinearStepper>
-                <h2>{this.state.actualSection === undefined ? TEXTS.survey.commentaire : this.props.listSection[this.state.actualSection].name}</h2>
-                {this.generationQuestionOfSection()}
-                <h2>Points totaux: {this.afficherPointsTotauxAttribue()}/{this.afficherPointsTotauxFormulaire()}</h2>
-            </div>
+          <SurveyQuestion
+            handleChangeQuestion={this.props.handleChangeQuestion}
+            key={`form-${this.props.formId}-section-${this.props.listSection[this.state.actualSection!].id}-question-${question.id}`}
+            sectionId={this.props.listSection[this.state.actualSection!].id}
+            formId={this.props.formId}
+            question={question}
+          ></SurveyQuestion>
         );
-    }
+      },
+    );
+  }
 
-    /**
-     *  Fonction permettant d'extraire des props le nom de toutes les sections.
-     * @returns Retourne un tableau de string.
-     */
-    obtenirListeNomSection() {
-        return this.props.listSection.map((section) => {
-            return section.name;
-        }).concat(TEXTS.survey.commentaire)
-    }
+  setComment(comment: string) {
+    this.props.handleChangeCommentaire(this.props.formId, comment);
+  }
 
-    /**
-     *  Fonction qui permet de générer les questions dans la section.
-     * @returns Retourne un tableau d'objet React.
-     * Bugfix : Permet de rendre le bouton confirmer clickable meme si le commentaire n'est pas changé
-     * @author : Léandre Kanmegne - H26
-     */
-    generationQuestionOfSection() {
-        if (this.state.actualSection === undefined) {
-            return <div>
-                <textarea
-                    id="outlined-number"
-                    value={this.props.commentaire}
-                    onChange={async (event) => { this.setComment(event.target.value) }}
-                    maxLength={500}
-                />
-                {
-                    this.state.sending ? 
-                        <CircularProgress size={50} color="inherit"/> :
-                        <ButtonExposat disabled={this.state.sending} onClick={() => this.sendComment()} children={"Confirmer"} />
-                }
-            </div>;
-        }
-        return this.props.listSection[this.state.actualSection].questions?.map(question => {
-            return <SurveyQuestion
-                handleChangeQuestion={this.props.handleChangeQuestion}
-                key={`form-${this.props.formId}-section-${this.props.listSection[this.state.actualSection!].id}-question-${question.id}`}
-                sectionId={this.props.listSection[this.state.actualSection!].id}
-                formId={this.props.formId}
-                question={question}
-            ></SurveyQuestion>;
-        });
-    }
+  async sendComment() {
+    this.setState({
+      sending: true,
+    });
 
-    setComment(comment: string) {
-        this.props.handleChangeCommentaire(this.props.formId, comment);
+    let result = await SurveyService.setCommentOfSurvey(
+      this.props.commentaire,
+      this.props.formId,
+    );
+    if (result.error) {
+      this.setState({
+        sending: false,
+      });
+    } else {
+      this.setState({
+        sending: false,
+        prevcommentaire: this.props.commentaire,
+      });
+      this.props.returnToMenu();
     }
+  }
 
-    async sendComment() {
-        this.setState({
-            sending: true,
-        });
+  /**
+   *  Méthode qui permet de changer la section actuelle.
+   * @param actual_section_id Id de la nouvelle section à afficher.
+   */
+  setActualSection(actual_section_id: number) {
+    this.setState({
+      actualSection:
+        actual_section_id >= this.props.listSection.length
+          ? undefined
+          : actual_section_id,
+    });
+  }
 
-        let result = await SurveyService.setCommentOfSurvey(this.props.commentaire, this.props.formId);
-        if (result.error) {
-            this.setState({
-                sending: false,
-            });
-        } else {
-            this.setState({
-                sending: false,
-                prevcommentaire: this.props.commentaire
-            });
-            this.props.returnToMenu();
-        }
-    }
+  /**
+   *  Fonction qui regarde si le formulaire contient des sections.
+   * @returns Retourne une valeur numérique.
+   */
+  surveyHasSection() {
+    return this.props.listSection.length > 0;
+  }
 
-    /**
-     *  Méthode qui permet de changer la section actuelle.
-     * @param actual_section_id Id de la nouvelle section à afficher.
-     */
-    setActualSection(actual_section_id: number) {
-        this.setState({
-            actualSection: actual_section_id >= this.props.listSection.length ? undefined : actual_section_id
-        });
-    }
+  /**
+   *  Fonction qui permet de déterminer si on est à la dernière section.
+   * @returns Retourne une valeur numérique.
+   */
+  isLastSection() {
+    return this.state.actualSection === this.props.listSection.length - 1;
+  }
 
-    /**
-     *  Fonction qui regarde si le formulaire contient des sections.
-     * @returns Retourne une valeur numérique.
-     */
-    surveyHasSection() {
-        return this.props.listSection.length > 0
-    }
+  /**
+   *  Fonction qui permet de déterminer si on n'est pas à la première section.
+   * @returns Retourne une valeur numérique.
+   */
+  isNotFirstSection() {
+    return (
+      this.state.actualSection === undefined || this.state.actualSection > 0
+    );
+  }
 
-    /**
-     *  Fonction qui permet de déterminer si on est à la dernière section.
-     * @returns Retourne une valeur numérique.
-     */
-    isLastSection() {
-        return this.state.actualSection === this.props.listSection.length - 1
-    }
+  /**
+   * @author Tommy Garneau
+   *  Fonction qui permet de calculer le nombre de points totaux attribués aux questions par les juges.
+   * @returns Retourne le nombre de points totaux attribués par les juges.
+   * Bugfix : Correction du calcul des points totaux attribués en s'assurant que les scores sont correctement additionnés pour toutes les sections et questions
+   * @author : Léandre Kanmegne - H26
+   * Code généré par Claude sonnet 4.6, Mars 2026
+   */
+  afficherPointsTotauxAttribue() {
+    let pointsPonderes = 0;
+    this.props.listSection.forEach((section) => {
+      section.questions.forEach((question) => {
+        pointsPonderes += question.score * question.maxValue;
+      });
+    });
+    return pointsPonderes;
+  }
 
-    /**
-     *  Fonction qui permet de déterminer si on n'est pas à la première section.
-     * @returns Retourne une valeur numérique.
-     */
-    isNotFirstSection() {
-        return this.state.actualSection === undefined || this.state.actualSection > 0
-    }
+  /**
+   * @author Tommy Garneau
+   *  Fonction qui permet de calculer le nombre de points totaux de la valeur maximale de toute les questions du formulaire.
+   * @returns Retourne les points totaux additionné de la valeur maximale de toute les questions.
+   * Bugfix : Correction du calcul des points totaux du formulaire en s'assurant que les points sont correctement additionnés pour toutes les sections et questions
+   * @author : Léandre Kanmegne - H26
+   * Code généré par Claude sonnet 4.6, Mars 2026
+   */
+  afficherPointsTotauxFormulaire() {
+    let pointsTotaux = 0;
+    this.props.listSection.forEach((section) => {
+      section.questions.forEach((question) => {
+        pointsTotaux += 10 * question.maxValue;
+      });
+    });
+    return pointsTotaux;
+  }
 
-    /**
-     * @author Tommy Garneau
-     *  Fonction qui permet de calculer le nombre de points totaux attribués aux questions par les juges.
-     * @returns Retourne le nombre de points totaux attribués par les juges.
-     */
-    afficherPointsTotauxAttribue() { 
-        let pointsTotaux = 0;
-        this.props.listSection.forEach(question => {
-               question.questions.forEach(score => {
-                    pointsTotaux += score.score;
-               });
-          });
-          return pointsTotaux;
-    }
-
-    /**
-     * @author Tommy Garneau
-     *  Fonction qui permet de calculer le nombre de points totaux de la valeur maximale de toute les questions du formulaire.
-     * @returns Retourne les points totaux additionné de la valeur maximale de toute les questions.
-     */
-    afficherPointsTotauxFormulaire() { 
-        let pointsTotaux = 0;
-        this.props.listSection.forEach(question => {
-               pointsTotaux += question.questions.length * 10
-          });
-          return pointsTotaux;
-    }
-
-    /**
-     *  Fonction permettant d'effectuer l'affichage la section.
-     * @returns Retourne un objet de type React.
-     */
-    render() {
-        return (
-            <div data-testid="survey-wrapper-section">
-                {!this.surveyHasSection() && <Alert severity="error">{TEXTS.survey.noSurveySectionFound}</Alert>}
-                {this.surveyHasSection() && this.generateSection()}
-            </div>
-        );
-    }
+  /**
+   *  Fonction permettant d'effectuer l'affichage la section.
+   * @returns Retourne un objet de type React.
+   */
+  render() {
+    return (
+      <div data-testid="survey-wrapper-section">
+        {!this.surveyHasSection() && (
+          <Alert severity="error">{TEXTS.survey.noSurveySectionFound}</Alert>
+        )}
+        {this.surveyHasSection() && this.generateSection()}
+      </div>
+    );
+  }
 }

@@ -53,7 +53,7 @@ final class ResultatService
     
     /**
      * Fonction qui permet de supprimer le résultat d'un juge pour une évaluation
-     * @param  int $id
+     * @param string $teamName Le nom de l'équipe pour laquelle les résultats doivent être supprimés
      * @return Result Retourne le résultat de l'opération
      */
     public function delete_judge_resultat(string $teamName, int $judgeId ): Result

@@ -18,7 +18,6 @@ class SurveyRepository extends Repository
 	 * @author Christopher Boisvert
 	 * @author Jean-Christophe Demers
      * Fonction qui permet d'obtenir les formulaires d'évaluations par l'uuid du juge.
-     * @param string $judge_uuid UUID du juge.
      * @return array Retourne un tableau contenant les formulaires d'évaluations, sinon retourne un tableau vide.
      */
     public function get_all_survey_by_judge_id(string $judgeUUID): array
@@ -69,7 +68,6 @@ class SurveyRepository extends Repository
 
     /**
      * Fonction qui permet d'obtenir les sections par l'ID d'un formulaire d'évaluation.
-     * @param int $survey_id Identifiant du formulaire d'évaluation.
      * @return array Retourne un tableau des sections d'un formulaire, sinon retourne un tableau vide.
      */
     public function get_all_sections_by_survey_id(int $surveyId): array
@@ -85,7 +83,6 @@ class SurveyRepository extends Repository
 
     /**
      * Fonction qui permet d'obtenir les questions par l'ID d'une section.
-     * @param int $section_id Identifiant d'une section.
      * @return array Retourne un tableau des questions d'une section, sinon retourne un tableau vide.
      */
     public function get_all_questions_by_section_id_and_evaluation_id(int $sectionId): array
@@ -163,7 +160,15 @@ class SurveyRepository extends Repository
      */
     public function get_survey_score( int $evaluationId )
     {
-        $sql = "SELECT SUM(score) AS score FROM criteria_evaluation WHERE evaluation_id=:evaluation_id";
+        /* Bugfix : Correction du calcul du score pour prendre en compte les valeurs maximales de chaque
+        * @author : Léandre Kanmegne - H26
+        * Code généré par Claude sonnet 4.6, Mars 2026
+        */
+        $sql = "SELECT ROUND(SUM(ce.score * c.max_value) / SUM(c.max_value) * 10, 2) AS score 
+        FROM criteria_evaluation ce 
+        INNER JOIN criteria c ON ce.criteria_id = c.id 
+        WHERE ce.evaluation_id = :evaluation_id";
+        // Fin du code généré 
         $req = $this->db->prepare($sql);
         $req->execute(array(
             "evaluation_id" => $evaluationId
