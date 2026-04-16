@@ -1,4 +1,5 @@
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 /**
  * Props du composant React: ConfirmationDialog.
@@ -9,6 +10,8 @@ import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, B
  * @property {string} content - Contenu à afficher dans la fenêtre contextuelle.
  * @property {string} confirmationButtonText - Texte à afficher dans le bouton de confirmation.
  * @property {() => void} confirmationButtonOnClick - Méthode à appeler lorsque le bouton de confirmation est cliqué.
+ * @property {string | undefined} confirmationKeyword - Mot-clé obligatoire à saisir pour activer la confirmation (optionnel).
+ * @property {string | undefined} confirmationPlaceholder - Placeholder du champ de double confirmation (optionnel).
  */
 interface ConfirmationDialogProps {
     parentIsDialogOpen: boolean
@@ -17,6 +20,8 @@ interface ConfirmationDialogProps {
     content: string
     confirmationButtonText: string
     confirmationButtonOnClick: () => void
+    confirmationKeyword?: string
+    confirmationPlaceholder?: string
 }
 
 /**
@@ -36,6 +41,23 @@ interface ConfirmationDialogProps {
  * @returns Un composant React qui affiche une fenêtre contextuelle de confirmation.
  */
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
+    // Double confirmation locale: saisie obligatoire d'un mot-clé si configuré.
+    // @author Nathan Reyes
+    const [confirmationInput, setConfirmationInput] = useState<string>('')
+
+    // Réinitialise le champ à la fermeture de la boîte de dialogue.
+    // @author Nathan Reyes
+    useEffect(() => {
+        if (!props.parentIsDialogOpen) {
+            setConfirmationInput('')
+        }
+    }, [props.parentIsDialogOpen])
+
+    // Vérifie si la double confirmation est valide.
+    // @author Nathan Reyes
+    const isDoubleConfirmationValid = props.confirmationKeyword === undefined
+        || confirmationInput.trim() === props.confirmationKeyword
+
     return (
         <Dialog
             open={props.parentIsDialogOpen}
@@ -48,6 +70,16 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
                 <DialogContentText>
                     {props.content}
                 </DialogContentText>
+                {props.confirmationKeyword !== undefined && (
+                    <TextField
+                        margin="dense"
+                        fullWidth
+                        label={`Tapez « ${props.confirmationKeyword} » pour confirmer`}
+                        placeholder={props.confirmationPlaceholder ?? props.confirmationKeyword}
+                        value={confirmationInput}
+                        onChange={(event) => setConfirmationInput(event.target.value)}
+                    />
+                )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => props.parentSetIsDialogOpen(false)}>
@@ -57,6 +89,7 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
                     autoFocus
                     variant="contained"
                     color="error"
+                    disabled={!isDoubleConfirmationValid}
                     onClick={() => {
                         // Exécute l'action de confirmation.
                         props.confirmationButtonOnClick()
