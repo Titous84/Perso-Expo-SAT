@@ -61,22 +61,29 @@ class JudgeStandRepository extends Repository
      * @param array l'ensemble des données fournie par le côté client. 
      * (information nécessaire sur l'évaluation pour l'insertion)
      * @return int un tableau  des juges
+     * Bugfix : Ajout d'un try catch pour éviter les erreurs de PDO et ajout d'une vérification pour s'assurer que le team_number fourni correspond à une équipe existante.
+     * @author Léandre Kanmegne - H26
     */
     public function add_evaluation(array $data) : int
     {
-        $teams_id = $this->find_teams_id($data['stand_id']);
+        try {
+            $teams_id = $this->find_teams_id($data['stand_id']);
 
-        $sql = "INSERT INTO `evaluation`(`judge_id`, `teams_id`, `comments`, `survey_id`, `heure`, `est_actif`) VALUES (:judge_id, :teams_id, ' ', :surveyId,:heure, 1);";
+            $sql = "INSERT INTO `evaluation`(`judge_id`, `teams_id`, `comments`, `survey_id`, `heure`, `est_actif`) VALUES (:judge_id, :teams_id, ' ', :surveyId,:heure, 1);";
 
-        $query = $this->connection->prepare($sql);
-        $query->execute(array(
-            ":judge_id" => $data['judge_id'],
-            ":teams_id" => $teams_id['id'],
-            ":surveyId" => $data['survey_id'],
-            ":heure" => $data['heure']
-        ));
+            $query = $this->connection->prepare($sql);
+            $query->execute(array(
+                ":judge_id" => $data['judge_id'],
+                ":teams_id" => $teams_id['id'],
+                ":surveyId" => $data['survey_id'],
+                ":heure" => $data['heure']
+            ));
 
-        return $this->connection->lastInsertId();
+            return $this->connection->lastInsertId();
+        } catch (PDOException $e) {
+            $this->logHandler->critical($e->getMessage(), ["http_error_code" => $e->getCode()]);
+            return 0;
+        }
     }
 
     /** 
@@ -85,26 +92,29 @@ class JudgeStandRepository extends Repository
      * @param array l'ensemble des données fournie par le côté client. 
      * (information nécessaire sur l'évaluation pour la modification)
      * @return array un tableau d'évaluations
+     * Bugfix : Ajout d'un try catch pour éviter les erreurs de PDO et ajout d'une vérification pour s'assurer que le team_number fourni correspond à une équipe existante.
+     * @author Léandre Kanmegne - H26
     */
     public function update_evaluation(array $data) : array
     {
-        $teams_id = $this->find_teams_id($data['stand_id']);
+        try {
+            $teams_id = $this->find_teams_id($data['stand_id']);
 
-        $sql = "UPDATE evaluation SET teams_id = :updated_teams_id, survey_id = :updated_surveyId
-                WHERE id = :id;";
+            $sql = "UPDATE evaluation SET teams_id = :updated_teams_id, survey_id = :updated_surveyId
+                    WHERE id = :id;";
 
-        $query = $this->connection->prepare($sql);
-        $query->execute(array(
-            ":id" => $data['id'],
+            $query = $this->connection->prepare($sql);
+            $query->execute(array(
+                ":id" => $data['id'],
+                ":updated_teams_id" => $teams_id['id'],
+                ":updated_surveyId" => $data['survey_id'],
+            ));
 
-            ":updated_teams_id" => $teams_id['id'],
-            ":updated_surveyId" => $data['survey_id'],
-        ));
-
-        $results = $query->fetchAll(PDO::FETCH_ASSOC);
-
-        return $results;
-
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            $this->logHandler->critical($e->getMessage(), ["http_error_code" => $e->getCode()]);
+            return [];
+        }
     }
 
     /**
@@ -143,13 +153,19 @@ class JudgeStandRepository extends Repository
      */
     public function find_teams_id(string $team_number) : array
     {
-        $sql = "SELECT id, categories_id FROM teams WHERE team_number = :team_number;";
+            $sql = "SELECT id, categories_id FROM teams WHERE team_number = :team_number;";
         
         $query = $this->connection->prepare($sql);
         $query->execute(array(
             ":team_number" => $team_number
         ));
+        /* Vérification si une équipe a été trouvée
+        * @author : Léandre Kanmegne - H26
+        */
         $response = $query->fetch();
+        if (!$response) {
+            throw new PDOException("Équipe avec le numéro '$team_number' introuvable.");
+        }
         return $response;
     }
     
@@ -175,7 +191,6 @@ class JudgeStandRepository extends Repository
      * @author Francis PAYAN
      * Code inspiré des autres fichiers Repository de manière à respecter la structure du projet.
      * @param int $judge_id L'ID du juge concerné.
-     * @param bool $globalScoreRemoved La nouvelle valeur du champ.
      * @return bool Résultat de la mise à jour.
      */
     public function updateGlobalScoreRemoved(int $judge_id, array $body): bool

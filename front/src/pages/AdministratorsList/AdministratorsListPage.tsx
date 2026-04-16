@@ -4,7 +4,6 @@ import { TEXTS } from '../../lang/fr';
 import AdministratorsTable from "../../components/AdministratorsListPage/AdministrationTable/AdministratorsTable";
 import UserService from "../../api/users/userService";
 import { ShowToast } from "../../utils/utils";
-import ConfirmationDialog from "../../components/ConfirmationDialog/ConfirmationDialog";
 
 /**
  * Page de gestion des administrateurs
@@ -18,9 +17,6 @@ export default function AdministratorsListPage() {
     // État de chargement du bouton de réinitialisation annuelle.
     // @author Nathan Reyes
     const [isResetLoading, setIsResetLoading] = useState<boolean>(false)
-    // État d'ouverture de la confirmation avant la réinitialisation annuelle.
-    // @author Nathan Reyes
-    const [isAnnualResetDialogOpen, setIsAnnualResetDialogOpen] = useState<boolean>(false)
 
     /**
      * Lance la réinitialisation des données de fin d'évènement.
@@ -38,14 +34,6 @@ export default function AdministratorsListPage() {
         }
     }
 
-    /**
-     * Ouvre le message de confirmation avant d'effacer les données annuelles.
-     * @author Nathan Reyes
-     */
-    const handleAskAnnualResetConfirmation = () => {
-        setIsAnnualResetDialogOpen(true)
-    }
-
     return (
         <div data-testid="administratorsListPage">
             <Box sx={{ mb: 4 }}>
@@ -61,7 +49,7 @@ export default function AdministratorsListPage() {
                     <Button
                         variant="contained"
                         color="error"
-                        onClick={handleAskAnnualResetConfirmation}
+                        onClick={handleAnnualReset}
                         disabled={isResetLoading}
                     >
                         {isResetLoading ? "Réinitialisation en cours..." : "Réinitialiser les données de fin d'évènement"}

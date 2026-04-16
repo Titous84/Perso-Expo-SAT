@@ -44,11 +44,16 @@ final class JudgeStandService
      * Fonction pour ajouter une évaluation.
      * @param array $data Les données de l'évaluation.
      * @return Result Le résultat de l'ajout.
+     * Bugfix : Ajout d'une vérification pour s'assurer que le team_number fourni correspond à une équipe existante.
+     * @author Léandre Kanmegne H-26
      */
     public function add_evaluation(array $data) : Result
     {
         $result = $this->repository->add_evaluation($data);
-        return new Result(EnumHttpCode::CREATED, array("Nous avons ajouter l'évaluation !"), $result);
+        if ($result === 0) {
+            return new Result(EnumHttpCode::BAD_REQUEST, array("Impossible d'assigner cette équipe. Vérifiez que le numéro d'équipe existe."));
+        }
+        return new Result(EnumHttpCode::CREATED, array("L'évaluation a été ajoutée !"), $result);
     }
 
     /**
@@ -56,18 +61,22 @@ final class JudgeStandService
      * Fonction pour modifier une évaluation.
      * @param array $data Les données de l'évaluation.
      * @return Result Le résultat de la modification.
+     * Bugfix : Ajout d'une vérification pour s'assurer que le team_number fourni correspond à une équipe existante.
+     * @author Léandre Kanmegne H-26
      */
     public function update_evaluation(array $data) : Result 
     {
         $result = $this->repository->update_evaluation($data);
-        return new Result(EnumHttpCode::SUCCESS, array("Nous avons modifier l'évaluation !"), $result);
+        if (empty($result) && $result !== []) {
+            return new Result(EnumHttpCode::BAD_REQUEST, array("Impossible de modifier cette assignation. Vérifiez le numéro d'équipe."));
+        }
+        return new Result(EnumHttpCode::SUCCESS, array("L'évaluation a été modifiée !"), $result);
     }
 
 
     /**
      * @author Xavier Houle
      * Fonction pour supprimer une évaluation.
-     * @param array $data Les données de l'évaluation.
      * @return Result Le résultat de la suppresion.
      */
     public function delete_evaluation(int $id) : Result {
@@ -92,7 +101,6 @@ final class JudgeStandService
      * @author Francis PAYAN
      * Code inspiré des autres fichiers Services de manière à respecter la structure du projet.
      * @param int $judge_id L'ID du juge à mettre à jour.
-     * @param bool $globalScoreRemoved Le nouveau statut de suppression du score global.
      * @return Result Le résultat de l'opération encapsulé dans un objet Result.
      */
     public function updateGlobalScoreRemoved(int $judge_id, array $body): Result

@@ -87,7 +87,6 @@ class SignUpTeamRepository extends Repository
      * add_member
      * Permet d'ajouter des membres
      * @param  Team $team L'équipe à ajouter
-     * @param  int $idTeam L'id de l'équipe
      * @param array $token Le token de connexion
      * @return void
      */
@@ -568,6 +567,12 @@ public function get_member_by_numero_da_and_survey(string $numero_da, string $ca
     public function delete_team(int $id): bool
 {
     try {
+        // Récupére les IDs des membres de l'équipe avant de supprimer les relations.
+        $sql = "SELECT users_id FROM users_teams WHERE teams_id = :id";
+        $req = $this->db->prepare($sql);
+        $req->execute(["id" => $id]);
+        $rows = $req->fetchAll();
+
         // Suppression des relations entre l'équipe et ses membres
         $this->delete_users_team($id);
 
@@ -590,6 +595,11 @@ public function get_member_by_numero_da_and_survey(string $numero_da, string $ca
         $sql = "DELETE FROM teams WHERE id = :id";
         $req = $this->db->prepare($sql);
         $req->execute(["id" => $id]);
+
+        // Suppression des membres de l'équipe
+        foreach ($rows as $row) {
+            $this->delete_user($row['users_id']);
+        }
 
         return $req->rowCount() > 0;
     }

@@ -34,4 +34,55 @@ class SignUpCategoryRepository extends Repository{
         }
     }
 
+    /**
+     * addCategory
+     * Ajoute une nouvelle catégorie
+     * @param object $category
+     * @return bool
+     * @Author Breno Gomes - H26
+     */
+    public function add_Category($category) : bool
+    {
+        try
+        {
+            $sql = "INSERT INTO categories (name, activated, max_members, survey_id, acronym) VALUES (:name, 1, :max_members, 1, :acronym)";
+            $req = $this->db->prepare($sql);
+            $req->bindParam(":name", $category->name);
+            $req->bindParam(":max_members", $category->max_members);
+            $req->bindParam(":acronym", $category->acronym);
+            return $req->execute();
+        }
+        catch(PDOException $e)
+        {
+            $context["http_error_code"] = $e->getCode();
+            $this->logHandler->critical($e->getMessage(), $context);
+            return false;
+        }
+    }
+
+
+    /**
+     * delete_category
+     * Supprime une catégorie de la base de données
+     * @param int $id
+     * @return int
+     * @Author Breno Gomes - H26
+     */
+    public function delete_category($id) : int
+    {
+        try
+        {
+            $sql = "DELETE FROM categories WHERE id = :id";
+            $req = $this->db->prepare($sql);
+            $req->bindParam(":id", $id);
+            $req->execute();
+            return $req->rowCount();
+        }
+        catch(PDOException $e)
+        {
+            $context["http_error_code"] = $e->getCode();
+            $this->logHandler->critical($e->getMessage(), $context);
+            return 0;
+        }
+    }
 }

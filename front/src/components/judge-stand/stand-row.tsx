@@ -5,16 +5,20 @@ import IAssignation from '../../types/juge-stand/IAssignation';
 import JugeInfo from '../../types/juge-stand/jugeInfo';
 import StandInfo from '../../types/juge-stand/standInfo';
 import LineSelect from './line-select';
+import TimeSlots from '../../types/juge-stand/timeSlots';
 
-interface StandRowProps
-{
-    stands:StandInfo[];
-    leJuge:JugeInfo;
-    standsEval:IAssignation[];
-    handleChangeAssignation: (evaluation: IAssignation) => void; 
-    handleDeleteAssignation: (id: number) => void;
-    verifyIfTeamIsAssignedMoreThan3Times: (standEvalArray: IAssignation[], stand_id: string) => boolean;
-    nbreColonnes:number;
+interface StandRowProps {
+  stands: StandInfo[];
+  leJuge: JugeInfo;
+  standsEval: IAssignation[];
+  handleChangeAssignation: (evaluation: IAssignation) => void;
+  handleDeleteAssignation: (id: number) => void;
+  verifyIfTeamIsAssignedMoreThan3Times: (
+    standEvalArray: IAssignation[],
+    stand_id: string,
+  ) => boolean;
+  nbreColonnes: number;
+  hours: TimeSlots[];
 }
 
 
@@ -40,6 +44,7 @@ export default class StandRow extends React.Component<StandRowProps> {
                             standsEval={this.props.standsEval} 
                             leJuge={this.props.leJuge} 
                             stands={this.props.stands}
+                            hours={this.props.hours}
                         />
                     </TableCell>
                 ))}

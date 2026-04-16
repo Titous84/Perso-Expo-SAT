@@ -20,6 +20,9 @@ import EvaluationsResultsListPage from './EvaluationsResultsListPage';
 vi.mock('../../api/result/resultService', () => ({
   default: {
     GetResult: vi.fn(),
+    getScoreExclusions: vi.fn().mockResolvedValue({ data: {} }),
+    updateScoreExclusion: vi.fn().mockResolvedValue({ data: {} }),
+    deletesJudgeScore: vi.fn().mockResolvedValue({ data: '' }),
   },
 }));
 
@@ -60,11 +63,19 @@ describe('ResultsList', () => {
   beforeEach(() => {
     // Simuler le comportement de GetResult pour retourner les résultats factices
     vi.spyOn(ResultServiceModule.default, 'GetResult').mockResolvedValue({ data: mockResults } as APIResult<ResultInfo[]>);
-  });
+    vi.spyOn(
+       ResultServiceModule.default,
+       'getScoreExclusions',
+     ).mockResolvedValue({ data: {} });
+    vi.spyOn(
+       ResultServiceModule.default,
+       'updateScoreExclusion',
+     ).mockResolvedValue({ data: {} });
+    vi.spyOn(
+       ResultServiceModule.default,
+       'deletesJudgeScore',
+     ).mockResolvedValue({ data: '' });
 
-  beforeEach(() => {
-    // Simuler le comportement de GetResult pour retourner les résultats factices
-    vi.spyOn(ResultServiceModule.default, 'GetResult').mockResolvedValue({ data: mockResults } as APIResult<ResultInfo[]>);
   });
 
   afterEach(() => {
@@ -88,6 +99,12 @@ describe('ResultsList', () => {
     // Simuler une erreur de l'API en retournant un tableau vide pour `data`.
     vi.spyOn(ResultServiceModule.default, 'GetResult').mockResolvedValueOnce({ data: [] } as APIResult<ResultInfo[]>);
     render(<EvaluationsResultsListPage />);
+    /* Attend que le composant affiche un message d'erreur ou un indicateur de chargement
+    * @author : Léandre Kanmegne - H26
+    */
+    await waitFor(() =>
+      expect(screen.getByText('Liste des résultats')).toBeDefined(),
+    );
   });
   
   // Ajouter des tests pour la sélection des scores des juges

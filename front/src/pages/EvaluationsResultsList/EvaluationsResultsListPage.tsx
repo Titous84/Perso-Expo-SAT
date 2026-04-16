@@ -372,7 +372,7 @@ class EvaluationsResultsListPage extends React.Component<
       ); // Calcule la somme des notes, acc = accumulateur, curr = valeur actuelle
       const finalScore =
         includedScores.length > 0
-          ? Math.round(totalScore / includedScores.length)
+          ? Math.round((totalScore / includedScores.length) * 100) / 100
           : null; // Calcule la note finale en arrondissant à l'entier le plus proche
 
       return {
@@ -487,8 +487,8 @@ class EvaluationsResultsListPage extends React.Component<
           ); // Calcule la somme des notes des juges incluses
           const finalScore =
             includedScores.length > 0
-              ? Math.round(totalScore / includedScores.length)
-              : 0; // Calcule la note finale en arrondissant à l'entier le plus proche
+              ? Math.round((totalScore / includedScores.length) * 100) / 100
+              : null; // Calcule la note finale en arrondissant à l'entier le plus proche
 
           return { ...result, judgeScores: judgeScoresCopy, finalScore }; // Retourne l'équipe avec les notes des juges mises à jour et la note finale recalculée
         }
