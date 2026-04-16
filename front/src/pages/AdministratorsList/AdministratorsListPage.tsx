@@ -73,9 +73,11 @@ export default function AdministratorsListPage() {
                     parentIsDialogOpen={isAnnualResetDialogOpen}
                     parentSetIsDialogOpen={setIsAnnualResetDialogOpen}
                     title="Confirmer la réinitialisation annuelle"
-                    content="Cette action va réinitialiser les équipes, les horaires de passage des évaluations et les résultats. Les administrateurs et les juges seront conservés. Voulez-vous continuer ?"
+                    content="Cette action va réinitialiser les équipes, les horaires de passage des évaluations et les résultats. Les administrateurs et les juges seront conservés. Pour confirmer, vous devez saisir le mot RÉINITIALISER."
                     confirmationButtonText="Confirmer la réinitialisation"
                     confirmationButtonOnClick={handleAnnualReset}
+                    confirmationKeyword="RÉINITIALISER"
+                    confirmationPlaceholder="RÉINITIALISER"
                 />
             </Box>
         </div>
