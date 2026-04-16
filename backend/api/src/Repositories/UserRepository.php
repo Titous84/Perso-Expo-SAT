@@ -706,7 +706,6 @@ class UserRepository extends Repository
 	/**
 	 * Fonction qui permet de modifier un juge.
 	 * @author Thomas-Gabriel Paquin
-	 * @param array $judge Juge à modifié.
 	 * @return int Retourne le nombre de lignes modifié.
 	 *@throws PDOException Peut lancer des erreurs PDOException.
 	 */
@@ -964,7 +963,6 @@ class UserRepository extends Repository
 	/**
 	 * Fonction qui permet de supprimer un juge.
 	 * @author Christopher Boisvert
-	 * @param int $id Credential du juge.
 	 * @throws PDOException Peut lancer des erreurs PDOException.
 	 * @return int Retourne le nombre de ligne supprimé.
 	 * 
@@ -1070,7 +1068,6 @@ class UserRepository extends Repository
 	/**
 	 * Cherche les usagers de l'équipe n'ayant pas leur courriel validé.
 	 * @author Maxime Demers Boucher
-	 * @param int $teamID Identifiant de l'équipe.
 	 * @return mixed Usagers n'ayant pas leur courriel validé
 	 */
 	public function email_adminValide(string $email)
